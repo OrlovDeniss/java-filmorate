@@ -1,48 +1,61 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.manager.IdManager;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/films")
+@Validated
 public class FilmController {
 
-    private final Map<Long, Film> filmsRepository = new HashMap<>();
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @GetMapping("{id}")
+    public Film getFilm(@PathVariable @Positive Long id) {
+        return filmService.findFilmById(id);
+    }
 
     @GetMapping
     public List<Film> getFilms() {
-        log.info("Список фильмов {}", filmsRepository.values());
-        return new ArrayList<>(filmsRepository.values());
+        return filmService.findAll();
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        film.setId(IdManager.getFilmId());
-        filmsRepository.put(film.getId(), film);
-        log.info("Добавлен фильм: {}.", film);
-        return filmsRepository.get(film.getId());
+        return filmService.create(film);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateFilm(@Valid @RequestBody Film film) {
-        if (filmsRepository.containsKey(film.getId())) {
-            filmsRepository.put(film.getId(), film);
-            log.info("Обновление фильма: {}.", film);
-            return new ResponseEntity<>(filmsRepository.get(film.getId()), HttpStatus.OK);
-        } else {
-            log.info("Несуществующий ИД при обновлении фильма: {}.", film);
-            return new ResponseEntity<>(film, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        return filmService.update(film);
     }
+
+    @PutMapping("{id}/like/{userId}")
+    public Film addLike(@PathVariable @Positive long id,
+                        @PathVariable @Positive long userId) {
+        return filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public Film removeLike(@PathVariable @Positive long id,
+                           @PathVariable @Positive long userId) {
+        return filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("popular")
+    public List<Film> getTopByLikes(@RequestParam(name = "count", required = false, defaultValue = "10")
+                                    @Positive Long count) {
+        return filmService.getTopByLikes(count);
+    }
+
 }
