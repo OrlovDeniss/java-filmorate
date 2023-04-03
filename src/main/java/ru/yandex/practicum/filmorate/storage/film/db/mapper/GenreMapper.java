@@ -14,8 +14,8 @@ import java.util.Map;
 @Component
 public class GenreMapper implements EntityMapper<Genre> {
 
-    private String TABLE_NAME = "genre";
-    private List<String> TABLE_FIELDS = List.of("name");
+    private static final String TABLE_NAME = "genre";
+    private static final List<String> TABLE_FIELDS = List.of("name");
 
     @Override
     public String getTableName() {
@@ -35,7 +35,7 @@ public class GenreMapper implements EntityMapper<Genre> {
     }
 
     @Override
-    public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Genre mapRow(ResultSet rs, int rowNum) {
         Genre genre = new Genre();
         try {
             genre.setId(rs.getLong("id"));

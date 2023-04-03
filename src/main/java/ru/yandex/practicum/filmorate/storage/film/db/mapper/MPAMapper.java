@@ -14,8 +14,8 @@ import java.util.Map;
 @Component
 public class MPAMapper implements EntityMapper<MPARating> {
 
-    private String TABLE_NAME = "mpa_rating";
-    private List<String> TABLE_FIELDS = List.of("name");
+    private static final String TABLE_NAME = "mpa_rating";
+    private static final List<String> TABLE_FIELDS = List.of("name");
 
     @Override
     public String getTableName() {

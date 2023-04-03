@@ -14,8 +14,8 @@ import java.util.Map;
 @Component
 public class UserMapper implements EntityMapper<User> {
 
-    private final String TABLE_NAME = "usr";
-    private final List<String> TABLE_FIELDS = List.of("email", "login", "name", "birthday");
+    private static final String TABLE_NAME = "usr";
+    private static final List<String> TABLE_FIELDS = List.of("email", "login", "name", "birthday");
 
     @Override
     public String getTableName() {

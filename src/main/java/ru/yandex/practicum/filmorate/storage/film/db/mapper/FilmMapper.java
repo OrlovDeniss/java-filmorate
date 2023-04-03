@@ -14,8 +14,8 @@ import java.util.Map;
 @Component
 public class FilmMapper implements EntityMapper<Film> {
 
-    private final String TABLE_NAME = "film";
-    private final List<String> TABLE_FIELDS = List.of(
+    private static final String TABLE_NAME = "film";
+    private static final List<String> TABLE_FIELDS = List.of(
             "name",
             "description",
             "release",
