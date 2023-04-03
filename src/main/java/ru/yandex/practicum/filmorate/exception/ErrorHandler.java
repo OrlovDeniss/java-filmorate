@@ -33,7 +33,12 @@ public class ErrorHandler {
         return new ErrorResponse(errors.toString());
     }
 
-    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, ConstraintViolationException.class})
+    @ExceptionHandler({
+            MethodNotImplemented.class,
+            EntityNotFoundException.class,
+            FilmNotFoundException.class,
+            UserNotFoundException.class,
+            ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ErrorResponse handleNotFoundOrIncorrectPathVariable(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
