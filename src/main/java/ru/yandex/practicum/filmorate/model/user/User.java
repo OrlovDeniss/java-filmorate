@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.user;
 
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,18 +12,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class User {
+public class User extends AbstractEntity {
 
-    private long id;
-    @Email(message = "Email is not valid")
+    @Email
     private String email;
     @Pattern(regexp = "^\\S*$")
-    @NotBlank(message = "Login must be not blank")
+    @NotBlank
     private String login;
     private String name;
-    @PastOrPresent(message = "Birthday must be before current date.")
+    @PastOrPresent
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
+    private Set<Long> friends = new HashSet<>();
 
     public void addFriend(Long id) {
         friends.add(id);
