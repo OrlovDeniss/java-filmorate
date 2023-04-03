@@ -62,4 +62,4 @@ https://dbdiagram.io/d/64196a81296d97641d8985fa
     }
 </details>
 
-![Image alt](https://github.com/OrlovDeniss/java-filmorate/raw/main/filmorate_ER.png)
+![Image alt](https://github.com/OrlovDeniss/java-filmorate/blob/add-database/filmorate_ER.png)
