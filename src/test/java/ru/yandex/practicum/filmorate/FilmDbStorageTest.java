@@ -24,8 +24,6 @@ class FilmDbStorageTest {
     @Autowired
     private final FilmDbStorage filmDbStorage;
 
-    private Film f;
-
     @Test
     void testFindById() {
         var filmOptional = filmDbStorage.findById(1L);

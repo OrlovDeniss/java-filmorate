@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user.db;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @Qualifier("userDbStorage")
 public class UserDbStorage extends AbstractDbStorage<User> implements UserStorage {
@@ -49,7 +51,13 @@ public class UserDbStorage extends AbstractDbStorage<User> implements UserStorag
     @Override
     public List<User> findAll() {
         var users = super.findAll();
-        users.forEach(user -> user.setFriends(friendsDbStorage.findFriendsByUserId(user.getId())));
+        var userFriends = friendsDbStorage.findUserFriends();
+        for (User user : users) {
+            var userId = user.getId();
+            if (userFriends.containsKey(userId)) {
+                user.setFriends(userFriends.get(userId));
+            }
+        }
         return users;
     }
 }
