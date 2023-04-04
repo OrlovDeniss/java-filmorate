@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,13 +29,13 @@ public class GenreMapper implements EntityMapper<Genre> {
 
     @Override
     public Map<String, Object> toMap(Genre genre) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         params.put(TABLE_FIELDS.get(0), genre.getName());
         return params;
     }
 
     @Override
-    public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Genre mapRow(ResultSet rs, int rowNum) {
         Genre genre = new Genre();
         try {
             genre.setId(rs.getLong("id"));

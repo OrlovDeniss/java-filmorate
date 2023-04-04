@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class MPAMapper implements EntityMapper<MPARating> {
 
     @Override
     public Map<String, Object> toMap(MPARating mpa) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         params.put(TABLE_FIELDS.get(0), mpa.getName());
         return params;
     }

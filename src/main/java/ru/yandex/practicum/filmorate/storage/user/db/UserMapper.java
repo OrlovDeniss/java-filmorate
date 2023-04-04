@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +15,11 @@ import java.util.Map;
 public class UserMapper implements EntityMapper<User> {
 
     private static final String TABLE_NAME = "usr";
-    private static final List<String> TABLE_FIELDS = List.of("email", "login", "name", "birthday");
+    private static final List<String> TABLE_FIELDS = List.of(
+            "email",
+            "login",
+            "name",
+            "birthday");
 
     @Override
     public String getTableName() {
@@ -29,7 +33,7 @@ public class UserMapper implements EntityMapper<User> {
 
     @Override
     public Map<String, Object> toMap(User user) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         params.put(TABLE_FIELDS.get(0), user.getEmail());
         params.put(TABLE_FIELDS.get(1), user.getLogin());
         params.put(TABLE_FIELDS.get(2), user.getName());

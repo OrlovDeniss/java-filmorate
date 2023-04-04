@@ -39,7 +39,7 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
                 " SET " + getFieldsWithQuestionMark() +
                 " WHERE ID = " + t.getId();
         log.info(sql + " " + Arrays.toString(mapper.toMap(t).values().toArray()));
-        jdbcTemplate.update(sql, mapValuesOrderByColumn(mapper.toMap(t)));
+        jdbcTemplate.update(sql, mapper.toMap(t).values().toArray());
         return t;
     }
 
@@ -60,14 +60,6 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
         return jdbcTemplate.query("SELECT ID, " +
                 getFieldsSeparatedByCommas() +
                 " FROM " + mapper.getTableName(), mapper);
-    }
-
-    protected Object[] mapValuesOrderByColumn(Map<String, Object> map) {
-        Object[] values = new Object[map.size()];
-        for (int i = 0; i < map.size(); i++) {
-            values[i] = map.get(mapper.getTableFields().get(i));
-        }
-        return values;
     }
 
     protected String getFieldsWithQuestionMark() {
