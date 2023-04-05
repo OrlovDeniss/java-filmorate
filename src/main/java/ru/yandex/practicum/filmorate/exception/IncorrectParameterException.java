@@ -14,6 +14,7 @@ public class IncorrectParameterException extends RuntimeException {
         return parameter;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
