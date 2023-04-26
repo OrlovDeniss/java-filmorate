@@ -18,7 +18,6 @@ public class LikesDbStorage {
     }
 
     protected void saveFilmLikes(Long filmId, Set<Long> likes) {
-        deleteAllLikes(filmId);
         if (likes.isEmpty()) {
             jdbcTemplate.update("INSERT INTO USER_FILM_LIKE (FILM_ID) VALUES (?)", filmId);
         } else {
@@ -42,7 +41,4 @@ public class LikesDbStorage {
         }
     }
 
-    protected void deleteAllLikes(Long id) {
-        jdbcTemplate.update("DELETE FROM USER_FILM_LIKE WHERE FILM_ID=?", id);
-    }
 }
