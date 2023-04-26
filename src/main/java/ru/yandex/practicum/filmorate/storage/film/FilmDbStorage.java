@@ -74,6 +74,20 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        var sql = "SELECT FILM.ID, FILM.NAME, FILM.DESCRIPTION, FILM.RELEASE, FILM.DURATION, " +
+                "COUNT(L.USER_ID) as RATING " +
+                "FROM FILM " +
+                "JOIN user_film_like as L on FILM.ID = L.FILM_ID " +
+                "JOIN user_film_like as L1 on L.FILM_ID = L1.FILM_ID " +
+                "WHERE L.user_id = " + userId +
+                " AND L1.user_id = " + friendId +
+                " GROUP BY FILM.ID " +
+                "ORDER BY RATING DESC";
+        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+    }
+
     private void saveFilmProperties(Film film) {
         var filmId = film.getId();
         genreDbStorage.saveFilmGenres(filmId, film.getGenres());

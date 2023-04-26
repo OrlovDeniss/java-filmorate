@@ -37,4 +37,10 @@ public class FilmController extends AbstractController<Film> {
                                     @Positive Long count) {
         return service.getPopular(count);
     }
+
+    @GetMapping("/common")
+    public List<Film> commonFilms(@RequestParam @Positive Long userId,
+                                  @Positive Long friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
 }
