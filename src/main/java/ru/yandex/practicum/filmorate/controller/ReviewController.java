@@ -2,35 +2,44 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
-import ru.yandex.practicum.filmorate.model.user.Review;
+import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Validated
 @RequestMapping("/reviews")
-public class ReviewController extends AbstractController<Review> {
+public class ReviewController {
 
     private final ReviewService service;
 
     protected ReviewController(ReviewService service) {
-        super(service);
         this.service = service;
     }
 
-    @Override
-    public List<Review> getAll() {
-        throw new MethodNotImplemented("Метод не реализован.");
+    @GetMapping("{id}")
+    public Review get(@PathVariable @Positive Long id) {
+        return service.findById(id);
     }
 
-    @GetMapping("?filmId={filmId}&count={count}")
-    public List<Review> findAllByFilmId(
-            @RequestParam(value = "filmId") Optional<Long> filmId,
-            @RequestParam(value = "count", defaultValue = "10") int count) {
+    @PostMapping
+    public Review add(@Valid @RequestBody Review t) {
+        return service.create(t);
+    }
+
+    @PutMapping
+    public Review update(@Valid @RequestBody Review t) {
+        return service.update(t);
+    }
+
+    @GetMapping
+    @ResponseBody
+    public List<Review> getAll(
+            @RequestParam(defaultValue = "0") Long filmId,
+            @RequestParam(defaultValue = "10") Integer count) {
         return service.findAllByFilmId(filmId, count);
     }
 
@@ -56,5 +65,11 @@ public class ReviewController extends AbstractController<Review> {
     public Review removeDislike(@PathVariable @Positive long id,
                                 @PathVariable @Positive long userId) {
         return service.removeDislikes(id, userId);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteReview(@PathVariable @Positive long id) {
+
+        service.deleteReview(id);
     }
 }

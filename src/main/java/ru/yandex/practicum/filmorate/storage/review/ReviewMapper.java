@@ -1,7 +1,7 @@
-package ru.yandex.practicum.filmorate.storage.user.db;
+package ru.yandex.practicum.filmorate.storage.review;
 
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
-import ru.yandex.practicum.filmorate.model.user.Review;
+import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
 import java.sql.ResultSet;
@@ -49,7 +49,7 @@ public class ReviewMapper implements EntityMapper<Review> {
             review.setFilmId(rs.getLong(TABLE_FIELDS.get(3)));
             review.setUseful(rs.getInt("useful"));
         } catch (SQLException e) {
-            throw new EntityNotFoundException("Отзыв не найден.");
+            throw new EntityNotFoundException(e.getMessage());
         }
         return review;
     }

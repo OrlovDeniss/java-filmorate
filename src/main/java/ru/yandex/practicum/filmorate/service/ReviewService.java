@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
-import ru.yandex.practicum.filmorate.model.user.Review;
-import ru.yandex.practicum.filmorate.storage.user.db.ReviewDbStorage;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.review.Review;
+import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service("reviewService")
 public class ReviewService extends AbstractService<Review> {
 
     private final ReviewDbStorage storage;
@@ -16,7 +17,7 @@ public class ReviewService extends AbstractService<Review> {
     }
 
 
-    public List<Review> findAllByFilmId(Optional<Long> filmId, int count) {
+    public List<Review> findAllByFilmId(Long filmId, int count) {
         return storage.findAllByFilmId(filmId, count);
     }
 
@@ -34,5 +35,9 @@ public class ReviewService extends AbstractService<Review> {
 
     public Review removeDislikes(long id, long userId) {
         return storage.deleteLikes(id, userId, false);
+    }
+
+    public void deleteReview(long id) {
+        storage.deleteReview(id);
     }
 }

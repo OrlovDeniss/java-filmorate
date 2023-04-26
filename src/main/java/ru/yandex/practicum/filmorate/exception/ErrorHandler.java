@@ -33,6 +33,12 @@ public class ErrorHandler {
         return new ErrorResponse(errors.toString());
     }
 
+    @ExceptionHandler(ReviewSpecialException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleReviewSpecialException(final ReviewSpecialException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler({
             MethodNotImplemented.class,
             EntityNotFoundException.class,

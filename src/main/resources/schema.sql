@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS reviews
     is_positive boolean,
     user_id     bigint,
     film_id     bigint,
-    FOREIGN KEY (user_id) REFERENCES usr (id),
-    FOREIGN KEY (film_id) REFERENCES film (id)
+    CONSTRAINT fk_r_user_id FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE,
+    CONSTRAINT fk_r_film_id FOREIGN KEY (film_id) REFERENCES film (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS user_review_like
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS user_review_like
     review_id bigint,
     user_id bigint,
     is_like boolean,
-    FOREIGN KEY (review_id) REFERENCES reviews (id),
-    FOREIGN KEY (user_id)   REFERENCES usr (id),
+    CONSTRAINT fk_url_review_id FOREIGN KEY (review_id) REFERENCES reviews (id) ON DELETE CASCADE,
+    CONSTRAINT fk_url_user_id FOREIGN KEY (user_id)   REFERENCES usr (id) ON DELETE CASCADE,
     PRIMARY KEY (review_id, user_id)
 );
