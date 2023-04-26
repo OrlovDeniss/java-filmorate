@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.db;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,8 +49,10 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             log.info("Загружены жанры: {}.", film.get());
             film.get().setMpa(mpaDbStorage.findFilmMpa(id));
             log.info("Загружен mpa: {}.", film.get());
-            film.get().setLikes(likesDbStorage.findFilmLikes(id));
+            var likes = likesDbStorage.findFilmLikes(id);
+            film.get().setLikes(likes);
             log.info("Загружены лайки: {}.", film.get());
+            film.get().setRate(likes.size());
             return film;
         }
         return Optional.empty();

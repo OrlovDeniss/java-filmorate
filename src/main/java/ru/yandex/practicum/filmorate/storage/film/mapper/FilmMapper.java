@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.db.mapper;
+package ru.yandex.practicum.filmorate.storage.film.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
