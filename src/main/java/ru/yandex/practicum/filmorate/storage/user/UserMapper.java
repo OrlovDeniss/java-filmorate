@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user.db;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;

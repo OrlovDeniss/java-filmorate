@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.db;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
-import ru.yandex.practicum.filmorate.storage.film.db.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.storage.film.mapper.GenreMapper;
 
 import java.sql.PreparedStatement;
 import java.util.HashSet;
