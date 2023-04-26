@@ -49,8 +49,10 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             log.info("Загружены жанры: {}.", film.get());
             film.get().setMpa(mpaDbStorage.findFilmMpa(id));
             log.info("Загружен mpa: {}.", film.get());
-            film.get().setLikes(likesDbStorage.findFilmLikes(id));
+            var likes = likesDbStorage.findFilmLikes(id);
+            film.get().setLikes(likes);
             log.info("Загружены лайки: {}.", film.get());
+            film.get().setRate(likes.size());
             return film;
         }
         return Optional.empty();
