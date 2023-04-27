@@ -43,4 +43,10 @@ public class FilmService extends AbstractService<Film> {
         log.info("Топ {} фильм(ов) по лайкам: {}.", count, films.stream().map(Entity::getId).toArray());
         return films;
     }
+
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        var films = filmStorage.getCommonFilms(userId, friendId);
+        log.info("Получение общих фильмов для user с id {} и друга с id {}", userId, friendId);
+        return films;
+    }
 }
