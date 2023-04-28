@@ -42,6 +42,7 @@ class FilmDbStorageTest {
         f2.setDescription("newDesc");
         f2.setDuration(300);
         f2.setReleaseDate(LocalDate.of(2020, 12, 1));
+        f2.setRate(2);
         f2.setGenres(Set.of(new Genre(3L, "Мультфильм")));
         f2.setLikes(Set.of(1L, 2L));
 
