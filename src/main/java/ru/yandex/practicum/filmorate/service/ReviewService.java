@@ -20,7 +20,7 @@ public class ReviewService extends AbstractService<Review> {
     }
 
 
-    public List<Review> findAllByFilmId(Long filmId, int count) {
+    public List<Review> findAllByFilmId(long filmId, int count) {
         return storage.findAllByFilmId(filmId, count);
     }
 

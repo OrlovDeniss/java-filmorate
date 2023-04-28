@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.film.MPARating;
 import ru.yandex.practicum.filmorate.service.Service;
-
-import java.util.List;
 
 @RestController
 @Validated
@@ -27,12 +24,6 @@ public class MPAController extends AbstractController<MPARating> {
     @Override
     public MPARating update(MPARating mpaRating) {
         throw new MethodNotImplemented("Метод не реализован.");
-    }
-
-    @GetMapping
-    @Override
-    public List<MPARating> findAll() {
-        return service.findAll();
     }
 
     @Override

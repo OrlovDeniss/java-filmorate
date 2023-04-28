@@ -74,7 +74,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
     }
 
     @Override
-    public List<Review> findAllByFilmId(Long filmId, int count) {
+    public List<Review> findAllByFilmId(long filmId, int count) {
         String sql = sqlQuery;
         if (filmId != 0) {
             sql = sql + " where film_id=" + filmId;
@@ -87,6 +87,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
         }
     }
 
+    @Override
     public void deleteReview(long id) {
         jdbcTemplate.update("delete from reviews where id=" + id);
         log.debug(

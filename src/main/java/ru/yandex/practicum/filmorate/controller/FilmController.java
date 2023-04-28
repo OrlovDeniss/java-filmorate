@@ -35,12 +35,6 @@ public class FilmController extends AbstractController<Film> {
         return getService().getPopular(count);
     }
 
-    @GetMapping
-    @Override
-    public List<Film> findAll() {
-        return service.findAll();
-    }
-
     @GetMapping("/common")
     public List<Film> commonFilms(@RequestParam @Positive Long userId,
                                   @Positive Long friendId) {

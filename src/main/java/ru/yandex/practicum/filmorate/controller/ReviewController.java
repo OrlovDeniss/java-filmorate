@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -16,13 +17,6 @@ public class ReviewController extends AbstractController<Review> {
 
     protected ReviewController(ReviewService service) {
         super(service);
-    }
-
-    @GetMapping
-    public List<Review> findAllByFilmId(
-            @RequestParam(defaultValue = "0") Long filmId,
-            @RequestParam(defaultValue = "10") Integer count) {
-        return getService().findAllByFilmId(filmId, count);
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -55,9 +49,12 @@ public class ReviewController extends AbstractController<Review> {
         getService().deleteReview(id);
     }
 
+    @GetMapping
     @Override
-    public List<Review> findAll() {
-        return null;
+    public List<Review> findAll(@RequestParam Map<String, String> requestParams) {
+        long filmId = Long.parseLong(requestParams.getOrDefault("filmId", "0"));
+        int count = Integer.parseInt(requestParams.getOrDefault("count", "10"));
+        return getService().findAllByFilmId(filmId, count);
     }
 
     @Override

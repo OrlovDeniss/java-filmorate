@@ -40,12 +40,6 @@ public class UserController extends AbstractController<User> {
         return getService().findMutualFriends(id, otherId);
     }
 
-    @GetMapping
-    @Override
-    public List<User> findAll() {
-        return service.findAll();
-    }
-
     @Override
     public UserService getService() {
         return (UserService) service;

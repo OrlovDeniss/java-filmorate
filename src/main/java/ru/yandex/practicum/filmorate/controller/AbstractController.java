@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.service.Service;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractController<T extends Entity> implements Controller<T> {
 
@@ -31,7 +32,10 @@ public abstract class AbstractController<T extends Entity> implements Controller
         return service.update(t);
     }
 
-    public abstract List<T> findAll();
+    @GetMapping
+    public List<T> findAll(@RequestParam Map<String, String> requestParams) {
+        return service.findAll();
+    }
 
     public abstract Service<T> getService();
 }
