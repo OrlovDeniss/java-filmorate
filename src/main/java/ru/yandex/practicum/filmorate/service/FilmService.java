@@ -22,20 +22,11 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public void addLike(Long filmId, Long userId) {
-        var film = findById(filmId);
-        film.setRate(film.getRate() + 1);
-        film.addLike(userId);
-        update(film);
-        log.info("Пользователь id={} добавил лайк к фильму: id={}.", userId, filmId);
+        filmStorage.addLike(filmId, userId);
     }
 
     public Film removeLike(Long filmId, Long userId) {
-        var film = findById(filmId);
-        film.setRate(film.getRate() - 1);
-        film.removeLike(userId);
-        update(film);
-        log.info("Пользователь id={} удалил лайк к фильму: id={}.", userId, filmId);
-        return film;
+        return filmStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getPopular(Long count) {

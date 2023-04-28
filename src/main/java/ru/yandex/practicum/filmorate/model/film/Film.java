@@ -23,16 +23,7 @@ public class Film extends AbstractEntity {
     @Positive
     private int duration;
     private int rate;
-    private Set<Long> likes = new HashSet<>();
     private Set<Genre> genres = new HashSet<>();
     private MPARating mpa = new MPARating();
-
-    public void addLike(Long id) {
-        likes.add(id);
-    }
-
-    public void removeLike(Long id) {
-        likes.remove(id);
-    }
 
 }
