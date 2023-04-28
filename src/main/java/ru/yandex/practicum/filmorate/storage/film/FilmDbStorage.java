@@ -76,7 +76,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             popularFilms.add(film);
         }
         if (popularFilms.size() == 0) {
-            selectFilms = jdbcTemplate.queryForRowSet("SELECT id FROM film ORDER BY name LIMIT ?",
+            selectFilms = jdbcTemplate.queryForRowSet("SELECT id FROM film ORDER BY id LIMIT ?",
                     limit);
             while (selectFilms.next()) {
                 Film film = findById(selectFilms.getLong("id")).get();

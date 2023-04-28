@@ -56,6 +56,6 @@ class FilmDbStorageTest {
 
     @Test
     void findTopByLikes() {
-        assertThat(filmDbStorage.findTopByLikes(1L).get(0).getId()).isEqualTo(1);
+        assertThat(filmDbStorage.findTopByLikes(1L).get(0).getId()).isEqualTo(2);
     }
 }
