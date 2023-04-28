@@ -13,4 +13,5 @@ public interface Storage<T> {
 
     List<T> findAll();
 
+    void delete(Long id);
 }

@@ -25,4 +25,9 @@ public class GenreController extends AbstractController<Genre> {
     public Genre update(Genre genre) {
         throw new MethodNotImplemented("Метод не реализован.");
     }
+
+    @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
 }

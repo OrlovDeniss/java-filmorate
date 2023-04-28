@@ -35,4 +35,9 @@ public abstract class AbstractController<T extends Entity> implements Controller
     public T update(@Valid @RequestBody T t) {
         return service.update(t);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable @Positive Long id) {
+        service.delete(id);
+    }
 }

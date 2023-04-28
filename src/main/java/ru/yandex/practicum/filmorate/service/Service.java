@@ -14,4 +14,5 @@ public interface Service<T extends Entity> {
 
     T update(T t);
 
+    void delete(Long id);
 }
