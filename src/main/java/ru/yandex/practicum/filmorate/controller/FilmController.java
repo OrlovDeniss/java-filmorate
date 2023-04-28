@@ -41,14 +41,14 @@ public class FilmController extends AbstractController<Film> {
         return service.findAll();
     }
 
-    @Override
-    public FilmService getService() {
-        return (FilmService) service;
-    }
-
     @GetMapping("/common")
     public List<Film> commonFilms(@RequestParam @Positive Long userId,
                                   @Positive Long friendId) {
-        return service.getCommonFilms(userId, friendId);
+        return getService().getCommonFilms(userId, friendId);
+    }
+
+    @Override
+    public FilmService getService() {
+        return (FilmService) service;
     }
 }
