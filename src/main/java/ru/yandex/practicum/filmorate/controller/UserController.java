@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("/users")
-public class UserController extends AbstractController<User> {
+public class UserController extends AbstractControllerWOParams<User> {
 
     public UserController(UserService service) {
         super(service);
@@ -40,14 +41,8 @@ public class UserController extends AbstractController<User> {
         return getService().findMutualFriends(id, otherId);
     }
 
-    @GetMapping
     @Override
-    public List<User> findAll() {
-        return service.findAll();
-    }
-
-    @Override
-    public UserService getService() {
+    protected UserService getService() {
         return (UserService) service;
     }
 }

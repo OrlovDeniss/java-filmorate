@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("/films")
-public class FilmController extends AbstractController<Film> {
+public class FilmController extends AbstractControllerWOParams<Film> {
 
     public FilmController(FilmService filmService) {
         super(filmService);
@@ -35,20 +36,14 @@ public class FilmController extends AbstractController<Film> {
         return getService().getPopular(count);
     }
 
-    @GetMapping
-    @Override
-    public List<Film> findAll() {
-        return service.findAll();
-    }
-
-    @Override
-    public FilmService getService() {
-        return (FilmService) service;
-    }
-
     @GetMapping("/common")
     public List<Film> commonFilms(@RequestParam @Positive Long userId,
                                   @Positive Long friendId) {
-        return service.getCommonFilms(userId, friendId);
+        return getService().getCommonFilms(userId, friendId);
+    }
+
+    @Override
+    protected FilmService getService() {
+        return (FilmService) service;
     }
 }

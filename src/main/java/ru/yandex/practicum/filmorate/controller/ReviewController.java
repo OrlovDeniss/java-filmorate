@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.abstractions.AbstractController;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -16,13 +18,6 @@ public class ReviewController extends AbstractController<Review> {
 
     protected ReviewController(ReviewService service) {
         super(service);
-    }
-
-    @GetMapping
-    public List<Review> findAllByFilmId(
-            @RequestParam(defaultValue = "0") Long filmId,
-            @RequestParam(defaultValue = "10") Integer count) {
-        return getService().findAllByFilmId(filmId, count);
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -55,13 +50,15 @@ public class ReviewController extends AbstractController<Review> {
         getService().deleteReview(id);
     }
 
-    @Override
-    public List<Review> findAll() {
-        return null;
+    @GetMapping
+    public List<Review> findAllWithParams(@RequestParam Map<String, String> requestParams) {
+        long filmId = Long.parseLong(requestParams.getOrDefault("filmId", "0"));
+        int count = Integer.parseInt(requestParams.getOrDefault("count", "10"));
+        return getService().findAllByFilmId(filmId, count);
     }
 
     @Override
-    public ReviewService getService() {
+    protected ReviewService getService() {
         return (ReviewService) service;
     }
 }
