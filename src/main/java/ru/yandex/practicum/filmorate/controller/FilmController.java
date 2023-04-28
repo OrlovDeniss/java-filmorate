@@ -45,4 +45,10 @@ public class FilmController extends AbstractController<Film> {
     public FilmService getService() {
         return (FilmService) service;
     }
+
+    @GetMapping("/common")
+    public List<Film> commonFilms(@RequestParam @Positive Long userId,
+                                  @Positive Long friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
 }
