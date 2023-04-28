@@ -26,9 +26,9 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
 
     @Override
     public void containsOrElseThrow(long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(
                 "select id from " + mapper.getTableName() + " where id = ?", id);
-        if (!userRows.next()) {
+        if (!rows.next()) {
             log.warn("{} with Id: {} not found",
                     mapper.getTableName(), id);
             throw new EntityNotFoundException(mapper.getTableName() + " with Id: " + id + " not found");
