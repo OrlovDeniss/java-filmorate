@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.abstractions;
 
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Entity;
@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.service.Service;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractController<T extends Entity> implements Controller<T> {
 
@@ -32,10 +30,6 @@ public abstract class AbstractController<T extends Entity> implements Controller
         return service.update(t);
     }
 
-    @GetMapping
-    public List<T> findAll(@RequestParam Map<String, String> requestParams) {
-        return service.findAll();
-    }
-
     protected abstract Service<T> getService();
+
 }

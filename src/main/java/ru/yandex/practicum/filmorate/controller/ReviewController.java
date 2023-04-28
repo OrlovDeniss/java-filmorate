@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.abstractions.AbstractController;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
@@ -50,8 +51,7 @@ public class ReviewController extends AbstractController<Review> {
     }
 
     @GetMapping
-    @Override
-    public List<Review> findAll(@RequestParam Map<String, String> requestParams) {
+    public List<Review> findAllWithParams(@RequestParam Map<String, String> requestParams) {
         long filmId = Long.parseLong(requestParams.getOrDefault("filmId", "0"));
         int count = Integer.parseInt(requestParams.getOrDefault("count", "10"));
         return getService().findAllByFilmId(filmId, count);

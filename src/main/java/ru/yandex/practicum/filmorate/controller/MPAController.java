@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.film.MPARating;
 import ru.yandex.practicum.filmorate.service.Service;
@@ -10,7 +11,7 @@ import ru.yandex.practicum.filmorate.service.Service;
 @RestController
 @Validated
 @RequestMapping("/mpa")
-public class MPAController extends AbstractController<MPARating> {
+public class MPAController extends AbstractControllerWOParams<MPARating> {
 
     public MPAController(Service<MPARating> service) {
         super(service);
