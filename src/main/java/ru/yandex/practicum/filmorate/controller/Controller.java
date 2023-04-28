@@ -11,7 +11,7 @@ public interface Controller<T> {
 
     T get(@PathVariable @Positive Long id);
 
-    List<T> getAll();
+    List<T> findAll();
 
     T add(@Valid @RequestBody T t);
 

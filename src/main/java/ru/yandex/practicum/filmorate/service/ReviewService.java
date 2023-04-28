@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewLikesDbStorage;
 
 import java.util.List;
 
@@ -10,10 +11,12 @@ import java.util.List;
 public class ReviewService extends AbstractService<Review> {
 
     private final ReviewDbStorage storage;
+    private final ReviewLikesDbStorage likesDbStorage;
 
-    protected ReviewService(ReviewDbStorage storage) {
+    protected ReviewService(ReviewDbStorage storage, ReviewLikesDbStorage likesDbStorage) {
         super(storage);
         this.storage = storage;
+        this.likesDbStorage = likesDbStorage;
     }
 
 
@@ -22,19 +25,23 @@ public class ReviewService extends AbstractService<Review> {
     }
 
     public Review addLikes(long id, long userId) {
-        return storage.addLikes(id, userId, true);
+        likesDbStorage.addLikes(id, userId, true);
+        return storage.findById(id).get();
     }
 
     public Review addDislike(long id, long userId) {
-        return storage.addLikes(id, userId, false);
+        likesDbStorage.addLikes(id, userId, false);
+        return storage.findById(id).get();
     }
 
     public Review removeLikes(long id, long userId) {
-        return storage.deleteLikes(id, userId, true);
+        likesDbStorage.deleteLikes(id, userId, true);
+        return storage.findById(id).get();
     }
 
     public Review removeDislikes(long id, long userId) {
-        return storage.deleteLikes(id, userId, false);
+        likesDbStorage.deleteLikes(id, userId, false);
+        return storage.findById(id).get();
     }
 
     public void deleteReview(long id) {

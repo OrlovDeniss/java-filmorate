@@ -15,7 +15,7 @@ public class ReviewLikesDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    protected void addLikes(Long id, Long userId, boolean b) throws EntityNotFoundException {
+    public void addLikes(Long id, Long userId, boolean b) throws EntityNotFoundException {
         String isLike = b ? "like" : "dislike";
         try {
             if (jdbcTemplate.update("update user_review_like " +
@@ -39,7 +39,7 @@ public class ReviewLikesDbStorage {
         }
     }
 
-    protected void deleteLikes(Long id, Long userId, boolean b) {
+    public void deleteLikes(Long id, Long userId, boolean b) {
         jdbcTemplate.update("delete from user_review_like where review_id=? " +
                 "and user_id=?", id, userId);
         log.debug(

@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewSpecialException;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
@@ -18,7 +17,6 @@ import java.util.Optional;
 @Slf4j
 @Repository("ReviewDbStorage")
 public class ReviewDbStorage extends AbstractDbStorage<Review> implements ReviewStorage {
-    private final ReviewLikesDbStorage likesDbStorage;
     private final String sqlQuery = "with d as" +
             " (select review_id, count(user_id) as dc" +
             " from user_review_like" +
@@ -32,9 +30,8 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
             " left join l on l.review_id = r.id" +
             " left join d on d.review_id = r.id";
 
-    protected ReviewDbStorage(JdbcTemplate jdbcTemplate, ReviewLikesDbStorage likesDbStorage) {
+    protected ReviewDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate, new ReviewMapper());
-        this.likesDbStorage = likesDbStorage;
     }
 
     @Override
@@ -74,18 +71,6 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Review addLikes(Long id, Long userId, boolean b) throws EntityNotFoundException {
-        likesDbStorage.addLikes(id, userId, b);
-        return findById(id).get();
-    }
-
-    @Override
-    public Review deleteLikes(Long id, Long userId, boolean b) {
-        likesDbStorage.deleteLikes(id, userId, b);
-        return findById(id).get();
     }
 
     @Override

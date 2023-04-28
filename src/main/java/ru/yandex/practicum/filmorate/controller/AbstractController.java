@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class AbstractController<T extends Entity> implements Controller<T> {
 
-    private final Service<T> service;
+    protected final Service<T> service;
 
     protected AbstractController(Service<T> service) {
         this.service = service;
@@ -19,11 +19,6 @@ public abstract class AbstractController<T extends Entity> implements Controller
     @GetMapping("{id}")
     public T get(@PathVariable @Positive Long id) {
         return service.findById(id);
-    }
-
-    @GetMapping
-    public List<T> getAll() {
-        return service.findAll();
     }
 
     @PostMapping
@@ -35,4 +30,8 @@ public abstract class AbstractController<T extends Entity> implements Controller
     public T update(@Valid @RequestBody T t) {
         return service.update(t);
     }
+
+    public abstract List<T> findAll();
+
+    public abstract Service<T> getService();
 }
