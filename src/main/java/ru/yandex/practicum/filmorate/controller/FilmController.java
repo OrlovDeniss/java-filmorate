@@ -42,7 +42,7 @@ public class FilmController extends AbstractController<Film> {
     }
 
     @Override
-    public FilmService getService() {
+    protected FilmService getService() {
         return (FilmService) service;
     }
 }

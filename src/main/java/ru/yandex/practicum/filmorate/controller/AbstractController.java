@@ -37,5 +37,5 @@ public abstract class AbstractController<T extends Entity> implements Controller
         return service.findAll();
     }
 
-    public abstract Service<T> getService();
+    protected abstract Service<T> getService();
 }

@@ -27,7 +27,7 @@ public class GenreController extends AbstractController<Genre> {
     }
 
     @Override
-    public Service<Genre> getService() {
+    protected Service<Genre> getService() {
         return service;
     }
 }

@@ -27,7 +27,7 @@ public class MPAController extends AbstractController<MPARating> {
     }
 
     @Override
-    public Service<MPARating> getService() {
+    protected Service<MPARating> getService() {
         return service;
     }
 }

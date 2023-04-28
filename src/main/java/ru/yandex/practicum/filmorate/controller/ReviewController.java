@@ -58,7 +58,7 @@ public class ReviewController extends AbstractController<Review> {
     }
 
     @Override
-    public ReviewService getService() {
+    protected ReviewService getService() {
         return (ReviewService) service;
     }
 }

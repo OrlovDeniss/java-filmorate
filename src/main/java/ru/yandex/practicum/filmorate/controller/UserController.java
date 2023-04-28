@@ -41,7 +41,7 @@ public class UserController extends AbstractController<User> {
     }
 
     @Override
-    public UserService getService() {
+    protected UserService getService() {
         return (UserService) service;
     }
 }
