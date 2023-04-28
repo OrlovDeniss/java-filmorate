@@ -78,7 +78,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 "Запрос списка {}'s успешно выполнен, всего {}'s: {}",
                 "Film", "Film", collection.size()
         );
-        return collection;
+        return addFilmsProperties(collection);
     }
 
     @Override
