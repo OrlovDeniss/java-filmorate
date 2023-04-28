@@ -43,7 +43,7 @@ public class UserController extends AbstractController<User> {
         return service.findMutualFriends(id, otherId);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable @Positive Long id) {
         service.deleteUser(id);
     }

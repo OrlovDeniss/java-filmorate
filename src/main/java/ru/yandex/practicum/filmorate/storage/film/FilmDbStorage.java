@@ -2,11 +2,14 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,15 +68,23 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> findTopByLikes(Long limit) {
-        var sql = "SELECT ID, " +
-                getFieldsSeparatedByCommas() +
-                " FROM " + mapper.getTableName() +
-                " WHERE id IN " +
-                "(SELECT film_id " +
-                "FROM user_film_like " +
-                "ORDER BY user_id DESC " +
-                "LIMIT " + limit + ")";
-        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+        SqlRowSet selectFilms = jdbcTemplate.queryForRowSet("SELECT id FROM film WHERE id IN (SELECT film_id " +
+                        "FROM (SELECT COUNT(user_id), film_id FROM user_film_like GROUP BY film_id ORDER BY film_id " +
+                        "DESC LIMIT ?));", limit);
+        ArrayList<Film> popularFilms = new ArrayList<>();
+        while (selectFilms.next()) {
+            Film film = findById(selectFilms.getLong("id")).get();
+            popularFilms.add(film);
+        }
+        if (popularFilms.size() == 0) {
+            selectFilms = jdbcTemplate.queryForRowSet("SELECT id FROM film ORDER BY name LIMIT ?",
+                    limit);
+            while (selectFilms.next()) {
+                Film film = findById(selectFilms.getLong("id")).get();
+                popularFilms.add(film);
+            }
+        }
+        return popularFilms;
     }
 
     @Override
@@ -108,4 +119,6 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         }
         return films;
     }
+
+
 }

@@ -63,7 +63,8 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM " + mapper.getTableName() + " WHERE id = ?", id);
+        String sql = "DELETE FROM " + mapper.getTableName() + " WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     protected String getFieldsWithQuestionMark() {

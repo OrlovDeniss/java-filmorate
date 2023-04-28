@@ -44,7 +44,7 @@ public class FilmController extends AbstractController<Film> {
         return service.getCommonFilms(userId, friendId);
     }
 
-    @DeleteMapping("/films/{id}")
+    @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable @Positive Long id) {
         service.deleteFilm(id);
     }
