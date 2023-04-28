@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.review.Review;
@@ -30,27 +29,8 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
             " left join l on l.review_id = r.id" +
             " left join d on d.review_id = r.id";
 
-    protected ReviewDbStorage(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, new ReviewMapper());
-    }
-
-    @Override
-    public Review save(Review t) throws EntityNotFoundException {
-        SqlRowSet userRows1 = jdbcTemplate.queryForRowSet(
-                "select id from usr where id = ?", t.getUserId());
-        if (!userRows1.next()) {
-            log.warn("{} with Id: {} not found",
-                    "User", t.getUserId());
-            throw new EntityNotFoundException("User with Id: " + t.getUserId() + " not found");
-        }
-        SqlRowSet userRows2 = jdbcTemplate.queryForRowSet(
-                "select id from film where id = ?", t.getFilmId());
-        if (!userRows2.next()) {
-            log.warn("{} with Id: {} not found",
-                    "User", t.getFilmId());
-            throw new EntityNotFoundException("User with Id: " + t.getFilmId() + " not found");
-        }
-        return super.save(t);
+    protected ReviewDbStorage(JdbcTemplate jdbcTemplate, ReviewMapper mapper) {
+        super(jdbcTemplate, mapper);
     }
 
     @Override
