@@ -25,4 +25,9 @@ public class MPAController extends AbstractController<MPARating> {
     public MPARating update(MPARating mpaRating) {
         throw new MethodNotImplemented("Метод не реализован.");
     }
+
+    @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
 }

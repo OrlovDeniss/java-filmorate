@@ -17,4 +17,6 @@ public interface Controller<T> {
 
     T update(@Valid @RequestBody T t);
 
+    void delete(@PathVariable @Positive Long id);
+
 }
