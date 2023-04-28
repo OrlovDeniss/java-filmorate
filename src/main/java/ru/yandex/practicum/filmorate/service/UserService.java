@@ -81,4 +81,8 @@ public class UserService extends AbstractService<User> {
             user.setName(user.getLogin());
         }
     }
+
+    public void deleteUser(Long id) {
+        super.delete(id);
+    }
 }

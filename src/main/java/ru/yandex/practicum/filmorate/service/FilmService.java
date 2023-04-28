@@ -40,4 +40,8 @@ public class FilmService extends AbstractService<Film> {
         log.info("Получение общих фильмов для user с id {} и друга с id {}", userId, friendId);
         return films;
     }
+
+    public void deleteFilm(Long id) {
+        super.delete(id);
+    }
 }

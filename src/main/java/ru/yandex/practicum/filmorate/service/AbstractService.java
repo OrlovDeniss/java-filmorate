@@ -45,4 +45,10 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
         log.info("Обновлен: {}.", t);
         return findById(t.getId());
     }
+
+    public void delete(Long id) {
+        T t = findById(id);
+        storage.delete(id);
+        log.info("Удален: {}.", t);
+    }
 }
