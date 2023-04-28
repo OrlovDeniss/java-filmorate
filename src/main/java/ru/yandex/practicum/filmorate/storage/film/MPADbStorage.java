@@ -4,12 +4,18 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.film.MPARating;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.mapper.MPAMapper;
 
 @Component
 public class MPADbStorage extends AbstractDbStorage<MPARating> {
+
+    @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
 
     protected MPADbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate, new MPAMapper());

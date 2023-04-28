@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.user.User;
 
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -46,9 +47,9 @@ public class FriendsDbStorage {
 
     protected Map<Long, Set<Long>> findUserFriends() {
         var sql = "SELECT USER_ID, USER_FRIEND_ID FROM USER_FRIEND";
-        var userFriendsList = jdbcTemplate.queryForList(sql);
+        List<Map<String, Object>> userFriendsList = jdbcTemplate.queryForList(sql);
         if (!userFriendsList.isEmpty()) {
-            var map = new HashMap<Long, Set<Long>>();
+            HashMap<Long, Set<Long>> map = new HashMap<>();
             for (Map<String, Object> userFriend : userFriendsList) {
                 var userId = (Long) userFriend.get("USER_ID");
                 var friendId = (Long) userFriend.get("USER_FRIEND_ID");

@@ -76,6 +76,10 @@ public class UserService extends AbstractService<User> {
                 .collect(Collectors.toList());
     }
 
+    public void deleteUser(Long id) {
+        super.delete(id);
+    }
+
     private void nameIsLoginIfNameIsNull(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
