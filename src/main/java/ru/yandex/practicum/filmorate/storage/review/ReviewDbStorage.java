@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.ReviewSpecialException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 
@@ -35,31 +35,33 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
     }
 
     @Override
-    public Review save(Review t) throws ReviewSpecialException {
+    public Review save(Review t) throws EntityNotFoundException {
         SqlRowSet userRows1 = jdbcTemplate.queryForRowSet(
                 "select id from usr where id = ?", t.getUserId());
         if (!userRows1.next()) {
             log.warn("{} with Id: {} not found",
                     "User", t.getUserId());
-            throw new ReviewSpecialException("User with Id: " + t.getUserId() + " not found");
+            throw new EntityNotFoundException("User with Id: " + t.getUserId() + " not found");
         }
         SqlRowSet userRows2 = jdbcTemplate.queryForRowSet(
                 "select id from film where id = ?", t.getFilmId());
         if (!userRows2.next()) {
             log.warn("{} with Id: {} not found",
                     "User", t.getFilmId());
-            throw new ReviewSpecialException("User with Id: " + t.getFilmId() + " not found");
+            throw new EntityNotFoundException("User with Id: " + t.getFilmId() + " not found");
         }
         return super.save(t);
     }
 
     @Override
-    public Review update(Review t) {
+    public Review update(Review t) throws EntityNotFoundException {
         String sql = "UPDATE " + mapper.getTableName() +
                 " SET content=?, is_positive=?" +
                 " WHERE ID = " + t.getId();
         log.info(sql + " " + Arrays.toString(mapper.toMap(t).values().toArray()));
-        jdbcTemplate.update(sql, t.getContent(), t.getIsPositive());
+        if (jdbcTemplate.update(sql, t.getContent(), t.getIsPositive()) <= 0) {
+            throw new EntityNotFoundException("Review with Id: " + t.getId() + " not found");
+        }
         return findById(t.getId()).get();
     }
 
@@ -74,7 +76,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
     }
 
     @Override
-    public List<Review> findAllByFilmId(long filmId, int count) {
+    public List<Review> findAllByFilmId(long filmId, int count) throws EntityNotFoundException {
         String sql = sqlQuery;
         if (filmId != 0) {
             sql = sql + " where film_id=" + filmId;
@@ -83,7 +85,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
         try {
             return jdbcTemplate.query(sql, mapper);
         } catch (DataIntegrityViolationException e) {
-            throw new ReviewSpecialException("Error! Cannot find film with id:" + filmId);
+            throw new EntityNotFoundException("Error! Cannot find film with id:" + filmId);
         }
     }
 

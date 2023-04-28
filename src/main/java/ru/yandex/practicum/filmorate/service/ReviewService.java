@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewLikesDbStorage;
@@ -20,26 +21,26 @@ public class ReviewService extends AbstractService<Review> {
     }
 
 
-    public List<Review> findAllByFilmId(long filmId, int count) {
+    public List<Review> findAllByFilmId(long filmId, int count) throws EntityNotFoundException {
         return storage.findAllByFilmId(filmId, count);
     }
 
-    public Review addLikes(long id, long userId) {
+    public Review addLikes(long id, long userId) throws EntityNotFoundException {
         likesDbStorage.addLikes(id, userId, true);
         return storage.findById(id).get();
     }
 
-    public Review addDislike(long id, long userId) {
+    public Review addDislike(long id, long userId) throws EntityNotFoundException {
         likesDbStorage.addLikes(id, userId, false);
         return storage.findById(id).get();
     }
 
-    public Review removeLikes(long id, long userId) {
+    public Review removeLikes(long id, long userId) throws EntityNotFoundException {
         likesDbStorage.deleteLikes(id, userId, true);
         return storage.findById(id).get();
     }
 
-    public Review removeDislikes(long id, long userId) {
+    public Review removeDislikes(long id, long userId) throws EntityNotFoundException {
         likesDbStorage.deleteLikes(id, userId, false);
         return storage.findById(id).get();
     }
