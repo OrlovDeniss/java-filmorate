@@ -72,12 +72,18 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> findAll() {
-        return addFilmsProperties(super.findAll());
+        String sql = sqlQuery + " group by f.id";
+        List<Film> collection = jdbcTemplate.query(sql, mapper);
+        log.debug(
+                "Запрос списка {}'s успешно выполнен, всего {}'s: {}",
+                "Film", "Film", collection.size()
+        );
+        return collection;
     }
 
     @Override
     public List<Film> findTopByLikes(Long limit) {
-        var sql = sqlQuery + " group by f.id order by rate desc limit = " + limit;
+        var sql = sqlQuery + " group by f.id order by rate desc limit " + limit;
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
@@ -134,14 +140,14 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         var sql = "SELECT FILM.ID, FILM.NAME, FILM.DESCRIPTION, FILM.RELEASE, FILM.DURATION, " +
-                "COUNT(L.USER_ID) as RATING " +
+                "COUNT(L.USER_ID) as RATE " +
                 "FROM FILM " +
                 "JOIN user_film_like as L on FILM.ID = L.FILM_ID " +
                 "JOIN user_film_like as L1 on L.FILM_ID = L1.FILM_ID " +
                 "WHERE L.user_id = " + userId +
                 " AND L1.user_id = " + friendId +
                 " GROUP BY FILM.ID " +
-                "ORDER BY RATING DESC";
+                "ORDER BY RATE DESC";
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
