@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.abstractions;
 
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Entity;
@@ -6,11 +6,10 @@ import ru.yandex.practicum.filmorate.service.Service;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.List;
 
 public abstract class AbstractController<T extends Entity> implements Controller<T> {
 
-    private final Service<T> service;
+    protected final Service<T> service;
 
     protected AbstractController(Service<T> service) {
         this.service = service;
@@ -19,11 +18,6 @@ public abstract class AbstractController<T extends Entity> implements Controller
     @GetMapping("{id}")
     public T get(@PathVariable @Positive Long id) {
         return service.findById(id);
-    }
-
-    @GetMapping
-    public List<T> getAll() {
-        return service.findAll();
     }
 
     @PostMapping
@@ -40,4 +34,6 @@ public abstract class AbstractController<T extends Entity> implements Controller
     public void delete(@PathVariable @Positive Long id) {
         service.delete(id);
     }
+
+    protected abstract Service<T> getService();
 }

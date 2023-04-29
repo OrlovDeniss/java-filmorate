@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface Storage<T> {
 
+    void containsOrElseThrow(long id);
+
     T save(T t);
 
     T update(T t);

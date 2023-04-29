@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Entity;
 
@@ -21,6 +23,17 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
                                 EntityMapper<T> mapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
+    }
+
+    @Override
+    public void containsOrElseThrow(long id) {
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(
+                "select id from " + mapper.getTableName() + " where id = ?", id);
+        if (!rows.next()) {
+            log.warn("{} with Id: {} not found",
+                    mapper.getTableName(), id);
+            throw new EntityNotFoundException(mapper.getTableName() + " with Id: " + id + " not found");
+        }
     }
 
     @Override
