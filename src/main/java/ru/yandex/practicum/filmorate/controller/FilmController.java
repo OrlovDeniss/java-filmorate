@@ -51,7 +51,7 @@ public class FilmController extends AbstractControllerWOParams<Film> {
     @GetMapping("director/{directorId}")
     public List<Film> getFilmsByYearOrLikes(@PathVariable @Positive long directorId,
                                             @RequestParam(name = "sortBy") String sortBy) {
-        return service.getDirectorFilmsSortBy(directorId, selectSortBy(sortBy));
+        return getService().getDirectorFilmsSortBy(directorId, selectSortBy(sortBy));
     }
 
     private String selectSortBy(String sortBy) {
