@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class UserService extends AbstractService<User> {
 
     private final FilmDbStorage filmStorage;
+
     public UserService(@Qualifier("userDbStorage") UserStorage storage, FilmDbStorage filmStorage) {
         super(storage);
         this.filmStorage = filmStorage;
