@@ -20,15 +20,19 @@ public class DirectorDbStorage extends AbstractDbStorage<Director> {
     }
 
     public void saveFilmDirector(Long filmId, Set<Director> directors) {
-        directors.forEach(director -> containsOrElseThrow(director.getId()));
-        deleteAllFilmDirectors(filmId);
-        jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) VALUES (?, ?)",
-                directors,
-                100,
-                (PreparedStatement ps, Director director) -> {
-                    ps.setLong(1, filmId);
-                    ps.setLong(2, director.getId());
-                });
+        if (!directors.isEmpty()) {
+            directors.forEach(director -> containsOrElseThrow(director.getId()));
+            deleteAllFilmDirectors(filmId);
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) VALUES (?, ?)",
+                    directors,
+                    100,
+                    (PreparedStatement ps, Director director) -> {
+                        ps.setLong(1, filmId);
+                        ps.setLong(2, director.getId());
+                    });
+        } else {
+            deleteAllFilmDirectors(filmId);
+        }
     }
 
     public Set<Director> findFilmDirector(Long filmId) {

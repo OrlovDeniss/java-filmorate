@@ -26,15 +26,19 @@ public class GenreDbStorage extends AbstractDbStorage<Genre> {
     }
 
     protected void saveFilmGenres(Long filmId, Set<Genre> genres) {
-        genres.forEach(genre -> containsOrElseThrow(genre.getId()));
-        deleteAllFilmGenres(filmId);
-        jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES (?, ?)",
-                genres,
-                100,
-                (PreparedStatement ps, Genre genre) -> {
-                    ps.setLong(1, filmId);
-                    ps.setLong(2, genre.getId());
-                });
+        if (!genres.isEmpty()) {
+            genres.forEach(genre -> containsOrElseThrow(genre.getId()));
+            deleteAllFilmGenres(filmId);
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES (?, ?)",
+                    genres,
+                    100,
+                    (PreparedStatement ps, Genre genre) -> {
+                        ps.setLong(1, filmId);
+                        ps.setLong(2, genre.getId());
+                    });
+        } else {
+            deleteAllFilmGenres(filmId);
+        }
     }
 
     protected Set<Genre> findFilmGenres(Long id) {
