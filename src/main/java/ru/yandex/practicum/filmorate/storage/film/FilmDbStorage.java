@@ -158,7 +158,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy) {
-        directorDbStorage.existsById(directorId);
+        directorDbStorage.containsOrElseThrow(directorId);
         var sql = sqlQuery +
                 " WHERE ID IN " +
                 "(SELECT FILM_ID" +

@@ -22,7 +22,7 @@ public class MPADbStorage extends AbstractDbStorage<MPARating> {
     }
 
     protected void saveFilmMpa(Long filmId, Long mpaId) {
-        existsById(mpaId);
+        containsOrElseThrow(mpaId);
         deleteAllFilmMpa(filmId);
         jdbcTemplate.update("INSERT INTO FILM_MPA (FILM_ID, MPA_ID) VALUES (?, ?)", filmId, mpaId);
     }

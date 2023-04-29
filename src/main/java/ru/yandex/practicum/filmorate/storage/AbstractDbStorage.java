@@ -79,20 +79,6 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
         jdbcTemplate.update("DELETE FROM " + mapper.getTableName() + " WHERE id = ?", id);
     }
 
-    @Override
-    public boolean existsById(Long id) {
-        if (id != null) {
-            try {
-                jdbcTemplate.queryForObject("SELECT ID FROM " + mapper.getTableName() + " WHERE id = ?", Long.class, id);
-            } catch (EmptyResultDataAccessException e) {
-                throw new EntityNotFoundException(mapper.getTableName() + ": id = " + id + " не найден");
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     protected String getFieldsWithQuestionMark() {
         StringBuilder stringBuilder = new StringBuilder();
         for (String field : mapper.getTableFields()) {
