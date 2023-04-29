@@ -26,15 +26,14 @@ public abstract class AbstractController<T extends Entity> implements Controller
     }
 
     @PutMapping
-
     public T update(@Valid @RequestBody T t) {
         return service.update(t);
     }
-
-    protected abstract Service<T> getService();
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable @Positive Long id) {
         service.delete(id);
     }
+
+    protected abstract Service<T> getService();
 }
