@@ -28,6 +28,11 @@ public class GenreController extends AbstractControllerWOParams<Genre> {
     }
 
     @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
+
+    @Override
     protected Service<Genre> getService() {
         return service;
     }

@@ -4,6 +4,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.mapper.GenreMapper;
@@ -14,6 +15,11 @@ import java.util.Set;
 
 @Component
 public class GenreDbStorage extends AbstractDbStorage<Genre> {
+
+    @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
 
     protected GenreDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate, new GenreMapper());

@@ -28,6 +28,11 @@ public class MPAController extends AbstractControllerWOParams<MPARating> {
     }
 
     @Override
+    public void delete(Long id) {
+        throw new MethodNotImplemented("Метод не реализован");
+    }
+
+    @Override
     protected Service<MPARating> getService() {
         return service;
     }

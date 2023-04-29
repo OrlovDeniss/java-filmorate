@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS usr
 
 CREATE TABLE IF NOT EXISTS user_film_like
 (
-    film_id bigint,
-    user_id bigint
+    film_id bigint REFERENCES usr (id) ON DELETE CASCADE,
+    user_id bigint REFERENCES film (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS genre
@@ -54,27 +54,21 @@ CREATE TABLE IF NOT EXISTS status
 
 CREATE TABLE IF NOT EXISTS film_mpa
 (
-    film_id bigint,
-    mpa_id  bigint,
-    FOREIGN KEY (film_id) REFERENCES film (id),
-    FOREIGN KEY (mpa_id) REFERENCES mpa_rating (id)
+    film_id bigint REFERENCES film (id) ON DELETE CASCADE,
+    mpa_id  bigint REFERENCES mpa_rating (id)
 );
 
 CREATE TABLE IF NOT EXISTS film_genre
 (
-    film_id  bigint,
-    genre_id bigint,
-    FOREIGN KEY (film_id) REFERENCES film (id),
-    FOREIGN KEY (genre_id) REFERENCES genre (id)
+    film_id  bigint REFERENCES film (id) ON DELETE CASCADE,
+    genre_id bigint REFERENCES genre (id)
 );
 
 CREATE TABLE IF NOT EXISTS user_friend
 (
-    user_id         bigint,
-    user_friend_id  bigint,
-    status_id       bigint,
-    FOREIGN KEY (user_friend_id) REFERENCES usr (id),
-    FOREIGN KEY (status_id) REFERENCES status (id)
+        user_id         bigint REFERENCES usr (id) ON DELETE CASCADE,
+        user_friend_id  bigint REFERENCES usr (id) ON DELETE CASCADE,
+        status_id       bigint REFERENCES status (id)
 );
 
 CREATE TABLE IF NOT EXISTS reviews

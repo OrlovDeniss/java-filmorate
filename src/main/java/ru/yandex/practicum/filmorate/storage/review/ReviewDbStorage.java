@@ -68,13 +68,4 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
             throw new EntityNotFoundException("Error! Cannot find film with id:" + filmId);
         }
     }
-
-    @Override
-    public void deleteReview(long id) {
-        jdbcTemplate.update("delete from reviews where id=" + id);
-        log.debug(
-                "Review with Id: {}, deleted!",
-                id
-        );
-    }
 }

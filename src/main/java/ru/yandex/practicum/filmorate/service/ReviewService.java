@@ -49,23 +49,19 @@ public class ReviewService extends AbstractService<Review> {
         return storage.findById(id).get();
     }
 
+    public Review removeLikes(long id, long userId) throws EntityNotFoundException {
+        likesDbStorage.deleteLikes(id, userId, true);
+        return storage.findById(id).get();
+    }
+
     public Review addDislike(long id, long userId) throws EntityNotFoundException {
         userStorage.containsOrElseThrow(userId);
         likesDbStorage.addLikes(id, userId, false);
         return storage.findById(id).get();
     }
 
-    public Review removeLikes(long id, long userId) throws EntityNotFoundException {
-        likesDbStorage.deleteLikes(id, userId, true);
-        return storage.findById(id).get();
-    }
-
     public Review removeDislikes(long id, long userId) throws EntityNotFoundException {
         likesDbStorage.deleteLikes(id, userId, false);
         return storage.findById(id).get();
-    }
-
-    public void deleteReview(long id) {
-        storage.deleteReview(id);
     }
 }

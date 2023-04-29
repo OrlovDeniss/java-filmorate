@@ -14,7 +14,6 @@ public class ReviewLikesDbStorage {
     }
 
     public void addLikes(Long id, Long userId, boolean b) {
-        String isLike = b ? "like" : "dislike";
         if (jdbcTemplate.update("update user_review_like " +
                         "set is_like = ? where review_id = ? and user_id = ?",
                 b, id, userId) <= 0) {
@@ -24,7 +23,7 @@ public class ReviewLikesDbStorage {
         }
         log.debug(
                 "Review with Id: {} get {} from user with Id: {}.",
-                id, isLike, userId
+                id, b ? "like" : "dislike", userId
         );
     }
 

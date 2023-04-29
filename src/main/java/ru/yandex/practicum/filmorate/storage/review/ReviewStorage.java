@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface ReviewStorage extends Storage<Review> {
     List<Review> findAllByFilmId(long filmId, int count);
-
-    void deleteReview(long id);
 }

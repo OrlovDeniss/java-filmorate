@@ -74,6 +74,15 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
                 " FROM " + mapper.getTableName(), mapper);
     }
 
+    @Override
+    public void delete(Long id) {
+        jdbcTemplate.update("DELETE FROM " + mapper.getTableName() + " WHERE id = ?", id);
+        log.debug(
+                "{} with Id: {}, deleted!",
+                mapper.getTableName(), id
+        );
+    }
+
     protected String getFieldsWithQuestionMark() {
         StringBuilder stringBuilder = new StringBuilder();
         for (String field : mapper.getTableFields()) {

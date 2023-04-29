@@ -44,12 +44,6 @@ public class ReviewController extends AbstractController<Review> {
         return getService().removeDislikes(id, userId);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteReview(@PathVariable @Positive long id) {
-
-        getService().deleteReview(id);
-    }
-
     @GetMapping
     public List<Review> findAllWithParams(@RequestParam Map<String, String> requestParams) {
         long filmId = Long.parseLong(requestParams.getOrDefault("filmId", "0"));
