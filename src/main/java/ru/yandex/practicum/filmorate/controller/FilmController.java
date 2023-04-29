@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.constraints.Positive;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -42,5 +44,18 @@ public class FilmController extends AbstractController<Film> {
     public List<Film> commonFilms(@RequestParam @Positive Long userId,
                                   @Positive Long friendId) {
         return service.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("director/{directorId}")
+    public List<Film> getFilmsByYearOrLikes(@PathVariable @Positive long directorId,
+                                            @RequestParam(name = "sortBy") String sortBy) {
+        switch (sortBy) {
+            case "year":
+                return service.getDirectorFilmsSortByYear(directorId);
+            case "likes":
+                return service.getDirectorFilmsSortByLikes(directorId);
+            default:
+                throw new IncorrectParameterException(sortBy, "не реализован.");
+        }
     }
 }

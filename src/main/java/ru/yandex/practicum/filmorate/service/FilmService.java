@@ -40,4 +40,16 @@ public class FilmService extends AbstractService<Film> {
         log.info("Получение общих фильмов для user с id {} и друга с id {}", userId, friendId);
         return films;
     }
+
+    public List<Film> getDirectorFilmsSortByYear(Long directorId) {
+        var films = filmStorage.getDirectorFilmsByYear(directorId);
+        log.info("Топ режисера {} по годам: {}", directorId, films.stream().map(Entity::getId).toArray());
+        return films;
+    }
+
+    public List<Film> getDirectorFilmsSortByLikes(Long directorId) {
+        var films = filmStorage.getDirectorFilmsByLikes(directorId);
+        log.info("Топ режисера {} по лайкам: {}", directorId, films.stream().map(Entity::getId).toArray());
+        return films;
+    }
 }

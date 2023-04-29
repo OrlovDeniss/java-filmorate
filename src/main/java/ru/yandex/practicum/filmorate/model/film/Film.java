@@ -25,5 +25,6 @@ public class Film extends AbstractEntity {
     private int rate;
     private Set<Genre> genres = new HashSet<>();
     private MPARating mpa = new MPARating();
+    private Set<Director> directors = new HashSet<>();
 
 }
