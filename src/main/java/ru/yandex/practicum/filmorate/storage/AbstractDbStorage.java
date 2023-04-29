@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Entity;
 
 import java.util.Arrays;
@@ -64,6 +65,23 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
     @Override
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM " + mapper.getTableName() + " WHERE id = ?", id);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        try {
+            jdbcTemplate.queryForObject("SELECT ID FROM " + mapper.getTableName() + " WHERE id = ?", Long.class, id);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void existsByIdOrThrow(Long id) {
+        if (!existsById(id)) {
+            throw new EntityNotFoundException(mapper.getTableName() + ": id = " + id + " не найден");
+        }
     }
 
     protected String getFieldsWithQuestionMark() {

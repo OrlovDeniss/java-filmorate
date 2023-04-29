@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.constraints.Positive;
-import java.util.Collections;
 import java.util.List;
 
 @RestController

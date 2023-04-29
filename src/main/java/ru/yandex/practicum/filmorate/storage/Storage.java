@@ -14,4 +14,8 @@ public interface Storage<T> {
     List<T> findAll();
 
     void delete(Long id);
+
+    boolean existsById(Long id);
+
+    void existsByIdOrThrow(Long id);
 }

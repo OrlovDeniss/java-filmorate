@@ -158,8 +158,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> getDirectorFilmsByYear(Long directorId) {
-        directorDbStorage.findById(directorId).orElseThrow(
-                () -> new EntityNotFoundException("Director id = " + directorId + " не найден"));
+        directorDbStorage.existsByIdOrThrow(directorId);
         var sql = sqlQuery +
                 " WHERE ID IN " +
                 "(SELECT FILM_ID" +
@@ -171,8 +170,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> getDirectorFilmsByLikes(Long directorId) {
-        directorDbStorage.findById(directorId).orElseThrow(
-                () -> new EntityNotFoundException("Director id = " + directorId + " не найден"));
+        directorDbStorage.existsByIdOrThrow(directorId);
         var sql = sqlQuery +
                 " WHERE ID IN " +
                 "(SELECT FILM_ID" +

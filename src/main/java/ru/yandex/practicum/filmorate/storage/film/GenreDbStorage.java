@@ -26,6 +26,7 @@ public class GenreDbStorage extends AbstractDbStorage<Genre> {
     }
 
     protected void saveFilmGenres(Long filmId, Set<Genre> genres) {
+        genres.forEach(genre -> existsByIdOrThrow(genre.getId()));
         deleteAllFilmGenres(filmId);
         jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES (?, ?)",
                 genres,
