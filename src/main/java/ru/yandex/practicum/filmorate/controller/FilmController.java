@@ -48,13 +48,18 @@ public class FilmController extends AbstractController<Film> {
     @GetMapping("director/{directorId}")
     public List<Film> getFilmsByYearOrLikes(@PathVariable @Positive long directorId,
                                             @RequestParam(name = "sortBy") String sortBy) {
+        return service.getDirectorFilmsSortBy(directorId, selectSortBy(sortBy));
+    }
+
+    private String selectSortBy(String sortBy) {
         switch (sortBy) {
             case "year":
-                return service.getDirectorFilmsSortByYear(directorId);
+                return "release";
             case "likes":
-                return service.getDirectorFilmsSortByLikes(directorId);
+                return "rate";
             default:
-                throw new IncorrectParameterException(sortBy, "не реализован.");
+                throw new IncorrectParameterException("Сортировка по параметру " +
+                        sortBy, " не реализована.");
         }
     }
 }

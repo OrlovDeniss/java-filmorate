@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
@@ -157,26 +158,14 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     }
 
     @Override
-    public List<Film> getDirectorFilmsByYear(Long directorId) {
-        directorDbStorage.existsByIdOrThrow(directorId);
+    public List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy) {
+        directorDbStorage.existsById(directorId);
         var sql = sqlQuery +
                 " WHERE ID IN " +
                 "(SELECT FILM_ID" +
                 " FROM FILM_DIRECTOR" +
                 " WHERE DIRECTOR_ID = " + directorId + ")" +
-                " ORDER BY RELEASE";
-        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
-    }
-
-    @Override
-    public List<Film> getDirectorFilmsByLikes(Long directorId) {
-        directorDbStorage.existsByIdOrThrow(directorId);
-        var sql = sqlQuery +
-                " WHERE ID IN " +
-                "(SELECT FILM_ID" +
-                " FROM FILM_DIRECTOR" +
-                " WHERE DIRECTOR_ID =" + directorId + ")" +
-                " ORDER BY RATE";
+                " ORDER BY " + sortBy;
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 

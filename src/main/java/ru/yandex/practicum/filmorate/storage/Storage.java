@@ -17,5 +17,4 @@ public interface Storage<T> {
 
     boolean existsById(Long id);
 
-    void existsByIdOrThrow(Long id);
 }

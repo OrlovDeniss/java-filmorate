@@ -73,18 +73,11 @@ public abstract class AbstractDbStorage<T extends Entity> implements Storage<T> 
             try {
                 jdbcTemplate.queryForObject("SELECT ID FROM " + mapper.getTableName() + " WHERE id = ?", Long.class, id);
             } catch (EmptyResultDataAccessException e) {
-                return false;
+                throw new EntityNotFoundException(mapper.getTableName() + ": id = " + id + " не найден");
             }
             return true;
         } else {
             return false;
-        }
-    }
-
-    @Override
-    public void existsByIdOrThrow(Long id) {
-        if (!existsById(id) && id != null) {
-            throw new EntityNotFoundException(mapper.getTableName() + ": id = " + id + " не найден");
         }
     }
 
