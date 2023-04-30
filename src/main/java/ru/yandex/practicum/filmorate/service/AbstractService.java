@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractService<T extends Entity> implements Service<T> {
 
-    private final Storage<T> storage;
+    protected final Storage<T> storage;
 
     protected AbstractService(Storage<T> storage) {
         this.storage = storage;

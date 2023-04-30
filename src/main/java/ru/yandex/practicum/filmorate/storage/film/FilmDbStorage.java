@@ -3,13 +3,17 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.user.Feed;
+import ru.yandex.practicum.filmorate.model.user.enums.EventType;
+import ru.yandex.practicum.filmorate.model.user.enums.OperationType;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
+import ru.yandex.practicum.filmorate.storage.user.FeedDbStorage;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +23,8 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     private final GenreDbStorage genreDbStorage;
     private final MPADbStorage mpaDbStorage;
+    private final FilmLikesDbStorage likesStorage;
+    private final FeedDbStorage feedStorage;
     private final String sqlQuery = "with l as" +
             " (select film_id, count(user_id) as lc" +
             " from user_film_like" +
@@ -32,10 +38,12 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
                          EntityMapper<Film> mapper,
                          GenreDbStorage genreDbStorage,
-                         MPADbStorage mpaDbStorage) {
+                         MPADbStorage mpaDbStorage, FilmLikesDbStorage likesStorage, FeedDbStorage feedStorage) {
         super(jdbcTemplate, mapper);
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
+        this.likesStorage = likesStorage;
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -92,17 +100,18 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         Film v = findById(k1).orElseThrow(
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
-        SqlRowSet favoriteFilmsRows = jdbcTemplate.queryForRowSet(
-                "select * from user_film_like " +
-                        "where film_id = ? " +
-                        "and user_id = ?", k1, k2);
         int rate = v.getRate();
-        if (!favoriteFilmsRows.next()) {
-            String sqlQuery = "insert into user_film_like(film_id, user_id) " +
-                    "values (?, ?)";
-            jdbcTemplate.update(sqlQuery, k1, k2);
+        Long l = likesStorage.addLike(k1, k2);
+        if (l != null) {
             rate = rate + 1;
             v.setRate(rate);
+            feedStorage.saveUserFeed(Feed.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(k2)
+                    .eventType(EventType.LIKE)
+                    .operation(OperationType.ADD)
+                    .entityId(k1)
+                    .build());
         }
         log.debug(
                 "Фильм под Id: {} получил лайк от пользователя" +
@@ -117,18 +126,19 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         Film v = findById(k1).orElseThrow(
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
-        String sqlQuery = "delete from user_film_like where film_id = ? and user_id = ?";
-        boolean b1 = jdbcTemplate.update(sqlQuery, k1, k2) > 0;
-        if (!b1) {
-            log.warn(
-                    "Error! Cannot delete user Id: {} like, user like not found.",
-                    k2
-            );
-            throw new EntityNotFoundException("Error! Cannot delete user Id: "
-                    + k2 + " like, user like not found.");
+        int rate = v.getRate();
+        Long l = likesStorage.deleteLike(k1, k2);
+        if (l != null) {
+            feedStorage.saveUserFeed(Feed.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(k2)
+                    .eventType(EventType.LIKE)
+                    .operation(OperationType.REMOVE)
+                    .entityId(k1)
+                    .build());
+            rate = rate - 1;
+            v.setRate(rate);
         }
-        int rate = v.getRate() - 1;
-        v.setRate(rate);
         log.debug(
                 "У фильма под Id: {} удален лайк от пользователя" +
                         " с Id: {}.\n Всего лайков: {}.",
