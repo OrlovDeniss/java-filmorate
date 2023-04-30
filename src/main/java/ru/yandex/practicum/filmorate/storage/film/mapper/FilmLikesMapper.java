@@ -42,11 +42,9 @@ public class FilmLikesMapper implements EntityMapper<FilmLike> {
 
     @Override
     public FilmLike mapRow(ResultSet rs, int rowNum) throws SQLException {
-        FilmLike filmLike = FilmLike.builder()
+        return FilmLike.builder()
                 .filmId(rs.getLong(TABLE_FIELDS.get(0)))
                 .userId(rs.getLong(TABLE_FIELDS.get(1)))
                 .build();
-        filmLike.setId(rs.getLong("id"));
-        return filmLike;
     }
 }

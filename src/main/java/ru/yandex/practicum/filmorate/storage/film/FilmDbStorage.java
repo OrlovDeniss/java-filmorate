@@ -103,8 +103,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
         int rate = v.getRate();
-        Long l = likesStorage.addLike(k1, k2);
-        if (l != null) {
+        if (likesStorage.addLike(k1, k2)) {
             rate = rate + 1;
             v.setRate(rate);
             feedStorage.saveUserFeed(Feed.builder()
@@ -117,7 +116,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         }
         log.debug(
                 "Фильм под Id: {} получил лайк от пользователя" +
-                        " с Id: {}.\n Всего лайков: {}.",
+                        " с Id: {}. Всего лайков: {}.",
                 k1, k2, rate
         );
         return v;
@@ -129,8 +128,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
         int rate = v.getRate();
-        Long l = likesStorage.deleteLike(k1, k2);
-        if (l != null) {
+        if (likesStorage.deleteLike(k1, k2)) {
             feedStorage.saveUserFeed(Feed.builder()
                     .timestamp(Instant.now().toEpochMilli())
                     .userId(k2)
@@ -143,7 +141,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         }
         log.debug(
                 "У фильма под Id: {} удален лайк от пользователя" +
-                        " с Id: {}.\n Всего лайков: {}.",
+                        " с Id: {}. Всего лайков: {}.",
                 k1, k2, rate
         );
         return v;
