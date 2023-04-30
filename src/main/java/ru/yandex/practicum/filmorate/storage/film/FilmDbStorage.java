@@ -38,7 +38,9 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
                          EntityMapper<Film> mapper,
                          GenreDbStorage genreDbStorage,
-                         MPADbStorage mpaDbStorage, FilmLikesDbStorage likesStorage, FeedDbStorage feedStorage) {
+                         MPADbStorage mpaDbStorage,
+                         FilmLikesDbStorage likesStorage,
+                         FeedDbStorage feedStorage) {
         super(jdbcTemplate, mapper);
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
