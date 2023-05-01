@@ -11,13 +11,14 @@ import ru.yandex.practicum.filmorate.storage.film.mapper.GenreMapper;
 
 import java.sql.PreparedStatement;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class GenreDbStorage extends AbstractDbStorage<Genre> {
 
     @Override
-    public void delete(Long id) {
+    public Optional<Genre> delete(Long id) {
         throw new MethodNotImplemented("Метод не реализован");
     }
 

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.review.Review;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
@@ -41,18 +40,15 @@ public class ReviewMapper implements EntityMapper<Review> {
     }
 
     @Override
-    public Review mapRow(ResultSet rs, int rowNum) {
-        Review review = new Review();
-        try {
-            review.setId(rs.getLong("id"));
-            review.setContent(rs.getString(TABLE_FIELDS.get(0)));
-            review.setIsPositive(rs.getBoolean(TABLE_FIELDS.get(1)));
-            review.setUserId(rs.getLong(TABLE_FIELDS.get(2)));
-            review.setFilmId(rs.getLong(TABLE_FIELDS.get(3)));
-            review.setUseful(rs.getInt("useful"));
-        } catch (SQLException e) {
-            throw new EntityNotFoundException(e.getMessage());
-        }
+    public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Review review = Review.builder()
+                .content(rs.getString(TABLE_FIELDS.get(0)))
+                .isPositive(rs.getBoolean(TABLE_FIELDS.get(1)))
+                .userId(rs.getLong(TABLE_FIELDS.get(2)))
+                .filmId(rs.getLong(TABLE_FIELDS.get(3)))
+                .useful(rs.getInt("useful"))
+                .build();
+        review.setId(rs.getLong("id"));
         return review;
     }
 }

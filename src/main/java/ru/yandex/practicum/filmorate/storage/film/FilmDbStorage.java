@@ -3,13 +3,17 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.user.Feed;
+import ru.yandex.practicum.filmorate.model.user.enums.EventType;
+import ru.yandex.practicum.filmorate.model.user.enums.OperationType;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
+import ru.yandex.practicum.filmorate.storage.user.FeedDbStorage;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +21,11 @@ import java.util.Optional;
 @Component
 public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorage {
 
-    private final GenreDbStorage genreDbStorage;
-    private final MPADbStorage mpaDbStorage;
-    private final DirectorDbStorage directorDbStorage;
+    private final GenreDbStorage genreStorage;
+    private final MPADbStorage mpaStorage;
+    private final FilmLikesDbStorage likesStorage;
+    private final FeedDbStorage feedStorage;
+    private final DirectorDbStorage directorStorage;
     private final String sqlQuery = "with l as" +
             " (select film_id, count(user_id) as lc" +
             " from user_film_like" +
@@ -32,13 +38,17 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
                          EntityMapper<Film> mapper,
-                         GenreDbStorage genreDbStorage,
-                         MPADbStorage mpaDbStorage,
-                         DirectorDbStorage directorDbStorage) {
+                         GenreDbStorage genreStorage,
+                         MPADbStorage mpaStorage,
+                         FilmLikesDbStorage likesStorage,
+                         FeedDbStorage feedStorage,
+                         DirectorDbStorage directorStorage) {
         super(jdbcTemplate, mapper);
-        this.genreDbStorage = genreDbStorage;
-        this.mpaDbStorage = mpaDbStorage;
-        this.directorDbStorage = directorDbStorage;
+        this.genreStorage = genreStorage;
+        this.mpaStorage = mpaStorage;
+        this.likesStorage = likesStorage;
+        this.feedStorage = feedStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -64,11 +74,11 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         }
 
         if (film.isPresent()) {
-            film.get().setGenres(genreDbStorage.findFilmGenres(id));
+            film.get().setGenres(genreStorage.findFilmGenres(id));
             log.info("Загружены жанры: {}.", film.get());
-            film.get().setMpa(mpaDbStorage.findFilmMpa(id));
+            film.get().setMpa(mpaStorage.findFilmMpa(id));
             log.info("Загружен mpa: {}.", film.get());
-            film.get().setDirectors(directorDbStorage.findFilmDirector(id));
+            film.get().setDirectors(directorStorage.findFilmDirector(id));
             log.info("Загружен directors: {}.", film.get());
             return film;
         }
@@ -97,21 +107,22 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         Film v = findById(k1).orElseThrow(
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
-        SqlRowSet favoriteFilmsRows = jdbcTemplate.queryForRowSet(
-                "select * from user_film_like " +
-                        "where film_id = ? " +
-                        "and user_id = ?", k1, k2);
+
         int rate = v.getRate();
-        if (!favoriteFilmsRows.next()) {
-            String sqlQuery = "insert into user_film_like(film_id, user_id) " +
-                    "values (?, ?)";
-            jdbcTemplate.update(sqlQuery, k1, k2);
+        if (likesStorage.addLike(k1, k2)) {
             rate = rate + 1;
             v.setRate(rate);
+            feedStorage.saveUserFeed(Feed.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(k2)
+                    .eventType(EventType.LIKE)
+                    .operation(OperationType.ADD)
+                    .entityId(k1)
+                    .build());
         }
         log.debug(
                 "Фильм под Id: {} получил лайк от пользователя" +
-                        " с Id: {}.\n Всего лайков: {}.",
+                        " с Id: {}. Всего лайков: {}.",
                 k1, k2, rate
         );
         return v;
@@ -122,21 +133,21 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         Film v = findById(k1).orElseThrow(
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
-        String sqlQuery = "delete from user_film_like where film_id = ? and user_id = ?";
-        boolean b1 = jdbcTemplate.update(sqlQuery, k1, k2) > 0;
-        if (!b1) {
-            log.warn(
-                    "Error! Cannot delete user Id: {} like, user like not found.",
-                    k2
-            );
-            throw new EntityNotFoundException("Error! Cannot delete user Id: "
-                    + k2 + " like, user like not found.");
+        int rate = v.getRate();
+        if (likesStorage.deleteLike(k1, k2)) {
+            feedStorage.saveUserFeed(Feed.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(k2)
+                    .eventType(EventType.LIKE)
+                    .operation(OperationType.REMOVE)
+                    .entityId(k1)
+                    .build());
+            rate = rate - 1;
+            v.setRate(rate);
         }
-        int rate = v.getRate() - 1;
-        v.setRate(rate);
         log.debug(
                 "У фильма под Id: {} удален лайк от пользователя" +
-                        " с Id: {}.\n Всего лайков: {}.",
+                        " с Id: {}. Всего лайков: {}.",
                 k1, k2, rate
         );
         return v;
@@ -158,7 +169,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy) {
-        directorDbStorage.containsOrElseThrow(directorId);
+        directorStorage.containsOrElseThrow(directorId);
         var sql = sqlQuery +
                 " WHERE ID IN " +
                 "(SELECT FILM_ID" +
@@ -192,17 +203,17 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     private void saveFilmProperties(Film film) {
         var filmId = film.getId();
-        genreDbStorage.saveFilmGenres(filmId, film.getGenres());
-        mpaDbStorage.saveFilmMpa(filmId, film.getMpa().getId());
-        directorDbStorage.saveFilmDirector(filmId, film.getDirectors());
+        genreStorage.saveFilmGenres(filmId, film.getGenres());
+        mpaStorage.saveFilmMpa(filmId, film.getMpa().getId());
+        directorStorage.saveFilmDirector(filmId, film.getDirectors());
     }
 
     private List<Film> addFilmsProperties(List<Film> films) {
         for (Film film : films) {
             var id = film.getId();
-            film.setGenres(genreDbStorage.findFilmGenres(id));
-            film.setMpa(mpaDbStorage.findFilmMpa(id));
-            film.setDirectors(directorDbStorage.findFilmDirector(id));
+            film.setGenres(genreStorage.findFilmGenres(id));
+            film.setMpa(mpaStorage.findFilmMpa(id));
+            film.setDirectors(directorStorage.findFilmDirector(id));
         }
         return films;
     }

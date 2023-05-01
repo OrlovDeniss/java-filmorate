@@ -4,6 +4,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.user.Feed;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -45,6 +46,11 @@ public class UserController extends AbstractControllerWOParams<User> {
     @GetMapping("{id}/recommendations")
     public List<Film> getFilmRecommendation(@PathVariable @Positive Long id) {
         return getService().getFilmRecommendation(id);
+    }
+
+    @GetMapping("{id}/feed")
+    public List<Feed> findAllUserFeed(@PathVariable @Positive Long id) {
+        return getService().findAllUserFeed(id);
     }
 
     @Override

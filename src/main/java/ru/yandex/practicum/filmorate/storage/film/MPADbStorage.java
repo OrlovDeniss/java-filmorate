@@ -9,11 +9,13 @@ import ru.yandex.practicum.filmorate.model.film.MPARating;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.mapper.MPAMapper;
 
+import java.util.Optional;
+
 @Component
 public class MPADbStorage extends AbstractDbStorage<MPARating> {
 
     @Override
-    public void delete(Long id) {
+    public Optional<MPARating> delete(Long id) {
         throw new MethodNotImplemented("Метод не реализован");
     }
 

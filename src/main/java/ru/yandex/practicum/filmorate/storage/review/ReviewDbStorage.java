@@ -7,8 +7,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.review.Review;
+import ru.yandex.practicum.filmorate.model.user.Feed;
+import ru.yandex.practicum.filmorate.model.user.enums.EventType;
+import ru.yandex.practicum.filmorate.model.user.enums.OperationType;
 import ru.yandex.practicum.filmorate.storage.AbstractDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.FeedDbStorage;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Repository("ReviewDbStorage")
 public class ReviewDbStorage extends AbstractDbStorage<Review> implements ReviewStorage {
+    private final FeedDbStorage feedStorage;
     private final String sqlQuery = "with d as" +
             " (select review_id, count(user_id) as dc" +
             " from user_review_like" +
@@ -29,8 +35,22 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
             " left join l on l.review_id = r.id" +
             " left join d on d.review_id = r.id";
 
-    protected ReviewDbStorage(JdbcTemplate jdbcTemplate, ReviewMapper mapper) {
+    protected ReviewDbStorage(JdbcTemplate jdbcTemplate, ReviewMapper mapper, FeedDbStorage feedStorage) {
         super(jdbcTemplate, mapper);
+        this.feedStorage = feedStorage;
+    }
+
+    @Override
+    public Review save(Review t) {
+        Review r = super.save(t);
+        feedStorage.saveUserFeed(Feed.builder()
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(t.getUserId())
+                .eventType(EventType.REVIEW)
+                .operation(OperationType.ADD)
+                .entityId(t.getId())
+                .build());
+        return r;
     }
 
     @Override
@@ -39,10 +59,35 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
                 " SET content=?, is_positive=?" +
                 " WHERE ID = " + t.getId();
         log.info(sql + " " + Arrays.toString(mapper.toMap(t).values().toArray()));
+
+        Review r = findById(t.getId()).get();
+        feedStorage.saveUserFeed(Feed.builder()
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(r.getUserId())
+                .eventType(EventType.REVIEW)
+                .operation(OperationType.UPDATE)
+                .entityId(r.getId())
+                .build());
         if (jdbcTemplate.update(sql, t.getContent(), t.getIsPositive()) <= 0) {
             throw new EntityNotFoundException("Review with Id: " + t.getId() + " not found");
         }
-        return findById(t.getId()).get();
+        return r;
+    }
+
+    @Override
+    public Optional<Review> delete(Long id) {
+        Optional<Review> optT = super.delete(id);
+        if (optT.isPresent()) {
+            feedStorage.saveUserFeed(Feed.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(optT.get().getUserId())
+                    .eventType(EventType.REVIEW)
+                    .operation(OperationType.REMOVE)
+                    .entityId(optT.get().getId())
+                    .build());
+            return optT;
+        }
+        return Optional.empty();
     }
 
     @Override
