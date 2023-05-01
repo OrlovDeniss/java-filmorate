@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -45,5 +46,23 @@ public class FilmController extends AbstractControllerWOParams<Film> {
     @Override
     protected FilmService getService() {
         return (FilmService) service;
+    }
+
+    @GetMapping("director/{directorId}")
+    public List<Film> getFilmsByYearOrLikes(@PathVariable @Positive long directorId,
+                                            @RequestParam(name = "sortBy") String sortBy) {
+        return getService().getDirectorFilmsSortBy(directorId, selectSortBy(sortBy));
+    }
+
+    private String selectSortBy(String sortBy) {
+        switch (sortBy) {
+            case "year":
+                return "release";
+            case "likes":
+                return "rate";
+            default:
+                throw new IncorrectParameterException("Сортировка по параметру " +
+                        sortBy, " не реализована.");
+        }
     }
 }
