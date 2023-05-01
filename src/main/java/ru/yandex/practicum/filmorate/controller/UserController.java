@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
-import ru.yandex.practicum.filmorate.model.user.Feed;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.user.Feed;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 

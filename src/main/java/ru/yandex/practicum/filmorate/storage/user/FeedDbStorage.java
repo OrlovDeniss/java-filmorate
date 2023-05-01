@@ -13,9 +13,9 @@ import java.util.List;
 public class FeedDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserFeedMapper mapper;
+    private final FeedMapper mapper;
 
-    public FeedDbStorage(JdbcTemplate jdbcTemplate, UserFeedMapper mapper) {
+    public FeedDbStorage(JdbcTemplate jdbcTemplate, FeedMapper mapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
     }

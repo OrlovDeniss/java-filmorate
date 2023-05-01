@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class UserFeedMapper implements EntityMapper<Feed> {
+public class FeedMapper implements EntityMapper<Feed> {
 
     private static final String TABLE_NAME = "feed";
     private static final List<String> TABLE_FIELDS = List.of(
