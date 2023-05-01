@@ -25,6 +25,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     private final MPADbStorage mpaDbStorage;
     private final FilmLikesDbStorage likesStorage;
     private final FeedDbStorage feedStorage;
+    private final DirectorDbStorage directorDbStorage;
     private final String sqlQuery = "with l as" +
             " (select film_id, count(user_id) as lc" +
             " from user_film_like" +
@@ -40,12 +41,14 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                          GenreDbStorage genreDbStorage,
                          MPADbStorage mpaDbStorage,
                          FilmLikesDbStorage likesStorage,
-                         FeedDbStorage feedStorage) {
+                         FeedDbStorage feedStorage,
+                         DirectorDbStorage directorDbStorage) {
         super(jdbcTemplate, mapper);
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
         this.likesStorage = likesStorage;
         this.feedStorage = feedStorage;
+        this.directorDbStorage = directorDbStorage;
     }
 
     @Override
@@ -75,6 +78,8 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             log.info("Загружены жанры: {}.", film.get());
             film.get().setMpa(mpaDbStorage.findFilmMpa(id));
             log.info("Загружен mpa: {}.", film.get());
+            film.get().setDirectors(directorDbStorage.findFilmDirector(id));
+            log.info("Загружен directors: {}.", film.get());
             return film;
         }
         return Optional.empty();
@@ -102,6 +107,10 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         Film v = findById(k1).orElseThrow(
                 () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
         );
+        SqlRowSet favoriteFilmsRows = jdbcTemplate.queryForRowSet(
+                "select * from user_film_like " +
+                        "where film_id = ? " +
+                        "and user_id = ?", k1, k2);
         int rate = v.getRate();
         if (likesStorage.addLike(k1, k2)) {
             rate = rate + 1;
@@ -161,10 +170,45 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
+    @Override
+    public List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy) {
+        directorDbStorage.containsOrElseThrow(directorId);
+        var sql = sqlQuery +
+                " WHERE ID IN " +
+                "(SELECT FILM_ID" +
+                " FROM FILM_DIRECTOR" +
+                " WHERE DIRECTOR_ID = " + directorId + ")" +
+                " ORDER BY " + sortBy;
+        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+    }
+
+    @Override
+    public List<Film> getFilmRecommendation(Long id) {
+        String sql = sqlQuery +
+                " where f.ID in (select FILM_ID " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID in (select USER_ID " +
+                "from USER_FILM_LIKE " +
+                "where FILM_ID in (select FILM_ID " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID = " + id + ") " +
+                "and USER_ID != " + id +
+                " group by USER_ID " +
+                "order by COUNT(FILM_ID) desc " +
+                "limit 1) " +
+                "and FILM_ID not in (select film_id " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID = " + id + ")) " +
+                "group by f.ID " +
+                "order by RATE desc";
+        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+    }
+
     private void saveFilmProperties(Film film) {
         var filmId = film.getId();
         genreDbStorage.saveFilmGenres(filmId, film.getGenres());
         mpaDbStorage.saveFilmMpa(filmId, film.getMpa().getId());
+        directorDbStorage.saveFilmDirector(filmId, film.getDirectors());
     }
 
     private List<Film> addFilmsProperties(List<Film> films) {
@@ -172,6 +216,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             var id = film.getId();
             film.setGenres(genreDbStorage.findFilmGenres(id));
             film.setMpa(mpaDbStorage.findFilmMpa(id));
+            film.setDirectors(directorDbStorage.findFilmDirector(id));
         }
         return films;
     }

@@ -15,4 +15,8 @@ public interface FilmStorage extends Storage<Film> {
     Film deleteLike(long k1, long k2) throws EntityNotFoundException;
 
     List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Film> getFilmRecommendation(Long id);
+
+    List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy);
 }

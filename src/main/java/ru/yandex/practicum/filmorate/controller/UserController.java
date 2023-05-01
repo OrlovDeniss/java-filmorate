@@ -4,6 +4,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.abstractions.AbstractControllerWOParams;
 import ru.yandex.practicum.filmorate.model.user.Feed;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -40,6 +41,11 @@ public class UserController extends AbstractControllerWOParams<User> {
     public List<User> getMutualFriends(@PathVariable @Positive Long id,
                                        @PathVariable @Positive Long otherId) {
         return getService().findMutualFriends(id, otherId);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public List<Film> getFilmRecommendation(@PathVariable @Positive Long id) {
+        return getService().getFilmRecommendation(id);
     }
 
     @GetMapping("{id}/feed")

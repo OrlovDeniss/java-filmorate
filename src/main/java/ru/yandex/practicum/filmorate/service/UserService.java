@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.user.Feed;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.model.user.enums.EventType;
 import ru.yandex.practicum.filmorate.model.user.enums.OperationType;
 import ru.yandex.practicum.filmorate.storage.user.FeedDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Instant;
@@ -21,9 +23,13 @@ import java.util.stream.Collectors;
 @Qualifier("userService")
 public class UserService extends AbstractService<User> {
     private final FeedDbStorage feedStorage;
+    private final FilmDbStorage filmStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage storage, FeedDbStorage feedStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage storage,
+                       FilmDbStorage filmStorage,
+                       FeedDbStorage feedStorage) {
         super(storage);
+        this.filmStorage = filmStorage;
         this.feedStorage = feedStorage;
     }
 
@@ -95,6 +101,10 @@ public class UserService extends AbstractService<User> {
                 .filter(otherUserFriendsId::contains)
                 .map(this::findById)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getFilmRecommendation(Long id) {
+        return filmStorage.getFilmRecommendation(id);
     }
 
     public List<Feed> findAllUserFeed(Long id) {
