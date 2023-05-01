@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -16,8 +18,11 @@ import java.util.stream.Collectors;
 @Qualifier("userService")
 public class UserService extends AbstractService<User> {
 
-    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
+    private final FilmDbStorage filmStorage;
+
+    public UserService(@Qualifier("userDbStorage") UserStorage storage, FilmDbStorage filmStorage) {
         super(storage);
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -76,9 +81,14 @@ public class UserService extends AbstractService<User> {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> getFilmRecommendation(Long id) {
+        return filmStorage.getFilmRecommendation(id);
+    }
+
     private void nameIsLoginIfNameIsNull(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
     }
+
 }

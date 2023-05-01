@@ -168,6 +168,28 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
+    @Override
+    public List<Film> getFilmRecommendation(Long id) {
+        String sql = sqlQuery +
+                " where f.ID in (select FILM_ID " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID in (select USER_ID " +
+                "from USER_FILM_LIKE " +
+                "where FILM_ID in (select FILM_ID " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID = " + id + ") " +
+                "and USER_ID != " + id +
+                " group by USER_ID " +
+                "order by COUNT(FILM_ID) desc " +
+                "limit 1) " +
+                "and FILM_ID not in (select film_id " +
+                "from USER_FILM_LIKE " +
+                "where USER_ID = " + id + ")) " +
+                "group by f.ID " +
+                "order by RATE desc";
+        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+    }
+
     private void saveFilmProperties(Film film) {
         var filmId = film.getId();
         genreDbStorage.saveFilmGenres(filmId, film.getGenres());
