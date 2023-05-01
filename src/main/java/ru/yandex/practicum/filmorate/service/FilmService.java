@@ -40,4 +40,10 @@ public class FilmService extends AbstractService<Film> {
         log.info("Получение общих фильмов для user с id {} и друга с id {}", userId, friendId);
         return films;
     }
+
+    public List<Film> getDirectorFilmsSortBy(Long directorId, String sortBy) {
+        var films = filmStorage.getDirectorFilmsSortBy(directorId, sortBy);
+        log.info("Топ режисера {} по {}: {}", directorId, sortBy, films.stream().map(Entity::getId).toArray());
+        return films;
+    }
 }
