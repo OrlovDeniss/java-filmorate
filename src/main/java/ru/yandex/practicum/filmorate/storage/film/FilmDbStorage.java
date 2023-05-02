@@ -101,31 +101,16 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
 
     @Override
     public List<Film> findTopByLikes(Long limit, Long genreId, Long year) {
+        String sql1 = " ";
         if (genreId != null && year != null) {
-            String sql = sqlQueryWithProperty +
-                    " WHERE YEAR(f.release) = " + year + " AND " +
-                    " fg.genre_id = " + genreId +
-                    " GROUP BY f.id" +
-                    " ORDER BY rate DESC" +
-                    " LIMIT " + limit;
-            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+            sql1 = " WHERE YEAR(f.release) = " + year + " AND " +
+                    " fg.genre_id = " + genreId;
         } else if (genreId != null) {
-            String sql = sqlQueryWithProperty +
-                    " WHERE fg.genre_id = " + genreId +
-                    " GROUP BY f.id" +
-                    " ORDER BY rate DESC" +
-                    " LIMIT " + limit;
-            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+            sql1 = " WHERE fg.genre_id = " + genreId;
         } else if (year != null) {
-            String sql = sqlQueryWithProperty +
-                    " WHERE YEAR(f.release) = " + year +
-                    " GROUP BY f.id" +
-                    " ORDER BY rate DESC" +
-                    " LIMIT " + limit;
-            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+            sql1 = " WHERE YEAR(f.release) = " + year;
         }
-        String sql = sqlQueryWithProperty +
-                " GROUP BY f.id" +
+        String sql = sqlQueryWithProperty + sql1 + " GROUP BY f.id" +
                 " ORDER BY rate DESC" +
                 " LIMIT " + limit;
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
