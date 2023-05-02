@@ -127,7 +127,6 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             rate = rate + 1;
             v.setRate(rate);
         }
-        
         feedStorage.saveUserFeed(Feed.builder()
                     .timestamp(Instant.now().toEpochMilli())
                     .userId(k2)
@@ -135,7 +134,6 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                     .operation(OperationType.ADD)
                     .entityId(k1)
                     .build());
-        
         log.debug(
                 "Фильм под Id: {} получил лайк от пользователя" +
                         " с Id: {}. Всего лайков: {}.",
@@ -154,7 +152,6 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             rate = rate - 1;
             v.setRate(rate);
         }
-        
         feedStorage.saveUserFeed(Feed.builder()
                     .timestamp(Instant.now().toEpochMilli())
                     .userId(k2)
@@ -162,7 +159,6 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                     .operation(OperationType.REMOVE)
                     .entityId(k1)
                     .build());
-        
         log.debug(
                 "У фильма под Id: {} удален лайк от пользователя" +
                         " с Id: {}. Всего лайков: {}.",
