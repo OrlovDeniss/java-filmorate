@@ -19,6 +19,10 @@ public class FilmController extends AbstractControllerWOParams<Film> {
         super(filmService);
     }
 
+    @Override
+    protected FilmService getService() {
+        return (FilmService) service;
+    }
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable @Positive long id,
                         @PathVariable @Positive long userId) {
@@ -43,15 +47,16 @@ public class FilmController extends AbstractControllerWOParams<Film> {
         return getService().getCommonFilms(userId, friendId);
     }
 
-    @Override
-    protected FilmService getService() {
-        return (FilmService) service;
-    }
-
     @GetMapping("director/{directorId}")
     public List<Film> getFilmsByYearOrLikes(@PathVariable @Positive long directorId,
                                             @RequestParam(name = "sortBy") String sortBy) {
         return getService().getDirectorFilmsSortBy(directorId, selectSortBy(sortBy));
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchByDirectorOrTitle(@RequestParam(name = "query") String word,
+                                              @RequestParam(name = "by", defaultValue = "title") String location) {
+        return getService().searchByDirectorOrTitle(word, location);
     }
 
     private String selectSortBy(String sortBy) {

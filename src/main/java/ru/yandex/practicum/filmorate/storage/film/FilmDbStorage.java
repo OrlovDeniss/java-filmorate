@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.EntityMapper;
 import ru.yandex.practicum.filmorate.storage.user.FeedDbStorage;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -199,6 +201,42 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 "group by f.ID " +
                 "order by RATE desc";
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+    }
+
+    @Override
+    public List<Film> searchByDirectorOrTitle(String word, String[] locationsForSearch) {
+        List<Film> films = new ArrayList<>();
+        String sql;
+        if (locationsForSearch.length == 1) {
+            if (locationsForSearch[0].equals("title")) {
+                sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+                        "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
+                        "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
+                        "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
+                        "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
+                        "ON FR.ID = FDD.FILM_ID WHERE FR.NAME LIKE '%" + word + "%' ORDER BY FR.RATE DESC;";
+            } else {
+                sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+                        "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
+                        "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
+                        "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
+                        "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
+                        "ON FR.ID = FDD.FILM_ID WHERE FDD.NAME_DIRECTOR LIKE '%" + word + "%' ORDER BY FR.RATE DESC;";
+            }
+        } else  {
+            sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+                    "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
+                    "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
+                    "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
+                    "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
+                    "ON FR.ID = FDD.FILM_ID WHERE FDD.NAME_DIRECTOR LIKE '%" + word + "%' OR FR.NAME LIKE '%" +
+                    word + "%' ORDER BY FR.RATE DESC;";
+        }
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql);
+        while (sqlRowSet.next()) {
+            films.add(findById(sqlRowSet.getLong("ID")).get());
+        }
+        return films;
     }
 
     private void saveFilmProperties(Film film) {
