@@ -209,34 +209,31 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
         String sql;
         if (locationsForSearch.length == 1) {
             if (locationsForSearch[0].equals("title")) {
-                sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+                sql = "(SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
                         "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
                         "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
                         "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
                         "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
-                        "ON FR.ID = FDD.FILM_ID WHERE FR.NAME LIKE '%" + word + "%' ORDER BY FR.RATE DESC;";
+                        "ON FR.ID = FDD.FILM_ID WHERE FR.NAME LIKE '%" + word + "%' ORDER BY FR.RATE DESC)";
             } else {
-                sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+                sql = "(SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
                         "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
                         "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
                         "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
                         "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
-                        "ON FR.ID = FDD.FILM_ID WHERE FDD.NAME_DIRECTOR LIKE '%" + word + "%' ORDER BY FR.RATE DESC;";
+                        "ON FR.ID = FDD.FILM_ID WHERE FDD.NAME_DIRECTOR LIKE '%" + word + "%' ORDER BY FR.RATE DESC)";
             }
         } else  {
-            sql = "SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
+            sql = "(SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
                     "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
                     "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
                     "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
                     "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
                     "ON FR.ID = FDD.FILM_ID WHERE FDD.NAME_DIRECTOR LIKE '%" + word + "%' OR FR.NAME LIKE '%" +
-                    word + "%' ORDER BY FR.RATE DESC;";
+                    word + "%' ORDER BY FR.RATE DESC)";
         }
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql);
-        while (sqlRowSet.next()) {
-            films.add(findById(sqlRowSet.getLong("ID")).get());
-        }
-        return films;
+        sql = sqlQuery + " WHERE f.id IN " + sql + " ORDER BY RATE DESC";
+        return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
     private void saveFilmProperties(Film film) {
