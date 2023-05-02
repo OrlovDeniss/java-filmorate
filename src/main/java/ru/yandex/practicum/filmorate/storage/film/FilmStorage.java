@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FilmStorage extends Storage<Film> {
 
-    List<Film> findTopByLikes(Long limit);
+    List<Film> findTopByLikes(Long limit, Long genreId, Long year);
 
     Film addLike(long k1, long k2) throws EntityNotFoundException;
 

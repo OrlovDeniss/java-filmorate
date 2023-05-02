@@ -30,8 +30,8 @@ public class FilmService extends AbstractService<Film> {
         return filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopular(Long count) {
-        var films = filmStorage.findTopByLikes(count);
+    public List<Film> getPopular(Long count, Long genreId, Long year) {
+        var films = filmStorage.findTopByLikes(count, genreId, year);
         log.info("Топ {} фильм(ов) по лайкам: {}.", count, films.stream().map(Entity::getId).toArray());
         return films;
     }

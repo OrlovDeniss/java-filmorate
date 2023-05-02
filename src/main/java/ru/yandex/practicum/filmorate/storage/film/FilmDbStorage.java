@@ -97,8 +97,46 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     }
 
     @Override
-    public List<Film> findTopByLikes(Long limit) {
-        var sql = sqlQuery + " group by f.id order by rate desc limit " + limit;
+    public List<Film> findTopByLikes(Long limit, Long genreId, Long year) {
+        if (genreId != null && year != null) {
+            String sql = "SELECT f.* FROM film AS f" +
+                    " LEFT JOIN film_mpa AS fm ON fm.film_id = f.id" +
+                    " LEFT JOIN film_genre AS fg ON fg.film_id = f.id" +
+                    " LEFT JOIN user_film_like AS ufl ON ufl.film_id = f.id" +
+                    " WHERE YEAR(f.release) = " + year + " AND " +
+                    " fg.genre_id = " + genreId +
+                    " GROUP BY f.id" +
+                    " ORDER BY COUNT (ufl.user_id) DESC" +
+                    " LIMIT " + limit;
+            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+        } else if (genreId != null) {
+            String sql = "SELECT f.* FROM film AS f" +
+                    " LEFT JOIN film_mpa AS fm ON fm.film_id = f.id" +
+                    " LEFT JOIN film_genre AS fg ON fg.film_id = f.id" +
+                    " LEFT JOIN user_film_like AS ufl ON ufl.film_id = f.id" +
+                    " WHERE fg.genre_id = " + genreId +
+                    " GROUP BY f.id" +
+                    " ORDER BY COUNT (ufl.user_id) DESC" +
+                    " LIMIT " + limit;
+            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+        } else if (year != null) {
+            String sql = "SELECT f.* FROM film AS f" +
+                    " LEFT JOIN film_mpa AS fm ON fm.film_id = f.id" +
+                    " LEFT JOIN film_genre AS fg ON fg.film_id = f.id" +
+                    " LEFT JOIN user_film_like AS ufl ON ufl.film_id = f.id" +
+                    " WHERE YEAR(f.release) = " + year +
+                    " GROUP BY f.id" +
+                    " ORDER BY COUNT (ufl.user_id) DESC" +
+                    " LIMIT " + limit;
+            return addFilmsProperties(jdbcTemplate.query(sql, mapper));
+        }
+        String sql = "SELECT f.* FROM film AS f" +
+                " LEFT JOIN film_mpa AS fm ON fm.film_id = f.id" +
+                " LEFT JOIN film_genre AS fg ON fg.film_id = f.id" +
+                " LEFT JOIN user_film_like AS ufl ON ufl.film_id = f.id" +
+                " GROUP BY f.id" +
+                " ORDER BY COUNT (ufl.user_id) DESC" +
+                " LIMIT " + limit;
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 
