@@ -19,15 +19,15 @@ public class FilmController extends AbstractControllerWOParams<Film> {
         super(filmService);
     }
 
-    @Override
-    protected FilmService getService() {
-        return (FilmService) service;
-    }
-    
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable @Positive long id,
                         @PathVariable @Positive long userId) {
         getService().addLike(id, userId);
+    }
+
+    @Override
+    protected FilmService getService() {
+        return (FilmService) service;
     }
 
     @DeleteMapping("{id}/like/{userId}")
