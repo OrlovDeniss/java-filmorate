@@ -36,6 +36,9 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             " from " + mapper.getTableName() + " as f" +
             " left join l on l.film_id = f.id";
 
+    private final String sqlQueryWithProperty = sqlQuery + " LEFT JOIN film_mpa AS fm ON fm.film_id = f.id" +
+            " LEFT JOIN film_genre AS fg ON fg.film_id = f.id";
+
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
                          EntityMapper<Film> mapper,
                          GenreDbStorage genreStorage,
@@ -97,8 +100,19 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     }
 
     @Override
-    public List<Film> findTopByLikes(Long limit) {
-        var sql = sqlQuery + " group by f.id order by rate desc limit " + limit;
+    public List<Film> findTopByLikes(Long limit, Long genreId, Long year) {
+        String sql1 = " ";
+        if (genreId != null && year != null) {
+            sql1 = " WHERE YEAR(f.release) = " + year + " AND " +
+                    " fg.genre_id = " + genreId;
+        } else if (genreId != null) {
+            sql1 = " WHERE fg.genre_id = " + genreId;
+        } else if (year != null) {
+            sql1 = " WHERE YEAR(f.release) = " + year;
+        }
+        String sql = sqlQueryWithProperty + sql1 + " GROUP BY f.id" +
+                " ORDER BY rate DESC" +
+                " LIMIT " + limit;
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
     }
 

@@ -33,8 +33,12 @@ public class FilmController extends AbstractControllerWOParams<Film> {
 
     @GetMapping("popular")
     public List<Film> getTopByLikes(@RequestParam(name = "count", required = false, defaultValue = "10")
-                                    @Positive Long count) {
-        return getService().getPopular(count);
+                                    @Positive Long count,
+                                    @RequestParam(name = "genreId", required = false)
+                                    @Positive Long genreId,
+                                    @RequestParam(name = "year", required = false)
+                                    @Positive Long year) {
+        return getService().getPopular(count, genreId, year);
     }
 
     @GetMapping("/common")
