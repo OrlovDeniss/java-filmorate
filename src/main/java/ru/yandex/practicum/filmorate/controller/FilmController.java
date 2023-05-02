@@ -23,6 +23,7 @@ public class FilmController extends AbstractControllerWOParams<Film> {
     protected FilmService getService() {
         return (FilmService) service;
     }
+    
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable @Positive long id,
                         @PathVariable @Positive long userId) {
