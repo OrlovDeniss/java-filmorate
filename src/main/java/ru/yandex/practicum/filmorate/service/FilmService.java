@@ -51,19 +51,15 @@ public class FilmService extends AbstractService<Film> {
 
     public List<Film> searchByDirectorOrTitle(String word, String location) {
         String[] locationsForSearch = location.split(",");
-        if (!locationsForSearch[0].equals("director") && !locationsForSearch[0].equals("title")) {
-            throw new IncorrectParameterException("Поиск по параметру " +
-                    locationsForSearch[0], " не реализована.");
-        } else if (locationsForSearch.length == 2 && !locationsForSearch[1].equals("director")
-                && !locationsForSearch[1].equals("title")) {
-            throw new IncorrectParameterException("Поиск по параметру " +
-                    locationsForSearch[1], " не реализована.");
-        } else if (locationsForSearch.length > 2) {
-            throw new IncorrectParameterException("Параметров для поиска не может быть больше чем ", "2");
+        if ((locationsForSearch[0].equals("director") || locationsForSearch[0].equals("title")) &&
+                (locationsForSearch.length == 1 || locationsForSearch.length == 2 &&
+                (locationsForSearch[1].equals("director") || locationsForSearch[1].equals("title")))) {
+            word = word.toLowerCase();
+            List<Film> films = filmStorage.searchByDirectorOrTitle(word, locationsForSearch);
+            log.info("Поиск {} по {}: {}", word, locationsForSearch, films.stream().map(Entity::getId).toArray());
+            return films;
+        } else {
+            throw new IncorrectParameterException("Некорректные параметры ", "поиска");
         }
-        word = word.toLowerCase();
-        List<Film> films = filmStorage.searchByDirectorOrTitle(word, locationsForSearch);
-        log.info("Поиск {} по {}: {}", word, locationsForSearch, films.stream().map(Entity::getId).toArray());
-        return films;
     }
 }
