@@ -41,26 +41,26 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
     }
 
     @Override
-    public Review save(Review t) {
-        Review r = super.save(t);
+    public Review save(Review review) {
+        super.save(review);
         feedStorage.saveUserFeed(Feed.builder()
                 .timestamp(Instant.now().toEpochMilli())
-                .userId(t.getUserId())
+                .userId(review.getUserId())
                 .eventType(EventType.REVIEW)
                 .operation(OperationType.ADD)
-                .entityId(t.getId())
+                .entityId(review.getId())
                 .build());
-        return r;
+        return review;
     }
 
     @Override
-    public Review update(Review t) throws EntityNotFoundException {
+    public Review update(Review review) throws EntityNotFoundException {
         String sql = "UPDATE " + mapper.getTableName() +
                 " SET content=?, is_positive=?" +
-                " WHERE ID = " + t.getId();
-        log.info(sql + " " + Arrays.toString(mapper.toMap(t).values().toArray()));
+                " WHERE ID = " + review.getId();
+        log.info(sql + " " + Arrays.toString(mapper.toMap(review).values().toArray()));
 
-        Review r = findById(t.getId()).get();
+        Review r = findById(review.getId()).get();
         feedStorage.saveUserFeed(Feed.builder()
                 .timestamp(Instant.now().toEpochMilli())
                 .userId(r.getUserId())
@@ -68,8 +68,8 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
                 .operation(OperationType.UPDATE)
                 .entityId(r.getId())
                 .build());
-        if (jdbcTemplate.update(sql, t.getContent(), t.getIsPositive()) <= 0) {
-            throw new EntityNotFoundException("Review with Id: " + t.getId() + " not found");
+        if (jdbcTemplate.update(sql, review.getContent(), review.getIsPositive()) <= 0) {
+            throw new EntityNotFoundException("Review with Id: " + review.getId() + " not found");
         }
         return r;
     }

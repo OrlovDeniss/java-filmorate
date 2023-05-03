@@ -117,54 +117,54 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     }
 
     @Override
-    public Film addLike(long k1, long k2) throws EntityNotFoundException {
-        Film v = findById(k1).orElseThrow(
-                () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
+    public Film addLike(long filmId, long userId) throws EntityNotFoundException {
+        Film film = findById(filmId).orElseThrow(
+                () -> new EntityNotFoundException("Film with Id: " + filmId + " not found")
         );
 
-        int rate = v.getRate();
-        if (likesStorage.addLike(k1, k2)) {
+        int rate = film.getRate();
+        if (likesStorage.addLike(filmId, userId)) {
             rate = rate + 1;
-            v.setRate(rate);
+            film.setRate(rate);
         }
         feedStorage.saveUserFeed(Feed.builder()
-                    .timestamp(Instant.now().toEpochMilli())
-                    .userId(k2)
-                    .eventType(EventType.LIKE)
-                    .operation(OperationType.ADD)
-                    .entityId(k1)
-                    .build());
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(userId)
+                .eventType(EventType.LIKE)
+                .operation(OperationType.ADD)
+                .entityId(filmId)
+                .build());
         log.debug(
                 "Фильм под Id: {} получил лайк от пользователя" +
                         " с Id: {}. Всего лайков: {}.",
-                k1, k2, rate
+                filmId, userId, rate
         );
-        return v;
+        return film;
     }
 
     @Override
-    public Film deleteLike(long k1, long k2) throws EntityNotFoundException {
-        Film v = findById(k1).orElseThrow(
-                () -> new EntityNotFoundException("Film with Id: " + k1 + " not found")
+    public Film deleteLike(long filmId, long userId) throws EntityNotFoundException {
+        Film film = findById(filmId).orElseThrow(
+                () -> new EntityNotFoundException("Film with Id: " + filmId + " not found")
         );
-        int rate = v.getRate();
-        if (likesStorage.deleteLike(k1, k2)) {
+        int rate = film.getRate();
+        if (likesStorage.deleteLike(filmId, userId)) {
             rate = rate - 1;
-            v.setRate(rate);
+            film.setRate(rate);
         }
         feedStorage.saveUserFeed(Feed.builder()
-                    .timestamp(Instant.now().toEpochMilli())
-                    .userId(k2)
-                    .eventType(EventType.LIKE)
-                    .operation(OperationType.REMOVE)
-                    .entityId(k1)
-                    .build());
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(userId)
+                .eventType(EventType.LIKE)
+                .operation(OperationType.REMOVE)
+                .entityId(filmId)
+                .build());
         log.debug(
                 "У фильма под Id: {} удален лайк от пользователя" +
                         " с Id: {}. Всего лайков: {}.",
-                k1, k2, rate
+                filmId, userId, rate
         );
-        return v;
+        return film;
     }
 
     @Override
@@ -229,7 +229,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
             } else {
                 sql = sql + " FDD.NAME_DIRECTOR LIKE '%" + word + "%')";
             }
-        } else  {
+        } else {
             sql = sql + " FDD.NAME_DIRECTOR LIKE '%" + word + "%' OR FR.NAME LIKE '%" +
                     word + "%')";
         }

@@ -20,15 +20,15 @@ public class FilmLikesDbStorage {
         this.mapper = mapper;
     }
 
-    public boolean addLike(long k1, long k2) {
+    public boolean addLike(long filmId, long userId) {
         try {
 
             new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName(mapper.getTableName())
                     .execute(
                             mapper.toMap(FilmLike.builder()
-                                    .filmId(k1)
-                                    .userId(k2)
+                                    .filmId(filmId)
+                                    .userId(userId)
                                     .build())
                     );
             return true;
@@ -36,15 +36,15 @@ public class FilmLikesDbStorage {
             log.warn(
                     "Error! Cannot add user Id: {} like." +
                             " User like already registered for Film Id: {}.",
-                    k2, k1
+                    userId, filmId
             );
             return false;
         }
     }
 
-    public boolean deleteLike(long k1, long k2) {
+    public boolean deleteLike(long filmId, long userId) {
 
         String sqlQuery = "delete from user_film_like where film_id = ? and user_id = ?";
-        return jdbcTemplate.update(sqlQuery, k1, k2) > 0;
+        return jdbcTemplate.update(sqlQuery, filmId, userId) > 0;
     }
 }

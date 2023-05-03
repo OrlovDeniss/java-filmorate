@@ -1,21 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class FriendsDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public FriendsDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final UserFriendsExtractor userFriendsExtractor;
 
     protected void saveFriends(Long userId, Set<Long> friends) {
         deleteAllFriends(userId);
@@ -45,24 +47,7 @@ public class FriendsDbStorage {
     }
 
     protected Map<Long, Set<Long>> findUserFriends() {
-        var sql = "SELECT USER_ID, USER_FRIEND_ID FROM USER_FRIEND";
-        var userFriendsList = jdbcTemplate.queryForList(sql);
-        if (!userFriendsList.isEmpty()) {
-            var map = new HashMap<Long, Set<Long>>();
-            for (Map<String, Object> userFriend : userFriendsList) {
-                var userId = (Long) userFriend.get("USER_ID");
-                var friendId = (Long) userFriend.get("USER_FRIEND_ID");
-                if (map.containsKey(userId)) {
-                    var oldSet = map.get(userId);
-                    oldSet.add(friendId);
-                    map.put(userId, oldSet);
-                } else {
-                    map.put(userId, Set.of(friendId));
-                }
-            }
-            return map;
-        }
-        return new HashMap<>();
+        return jdbcTemplate.query("SELECT USER_ID, USER_FRIEND_ID FROM USER_FRIEND", userFriendsExtractor);
     }
 
     protected void deleteAllFriends(Long id) {
