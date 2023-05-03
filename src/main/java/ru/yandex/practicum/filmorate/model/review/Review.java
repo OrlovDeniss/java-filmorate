@@ -13,13 +13,18 @@ import javax.validation.constraints.NotNull;
 public class Review extends AbstractEntity {
 
     @NotBlank
+    @JsonProperty("content")
     private String content;
     @NotNull
+    @JsonProperty("isPositive")
     private Boolean isPositive;
     @NotNull
+    @JsonProperty("userId")
     private Long userId;
     @NotNull
+    @JsonProperty("filmId")
     private Long filmId;
+    @JsonProperty("useful")
     private Integer useful;
 
     @JsonProperty("reviewId")

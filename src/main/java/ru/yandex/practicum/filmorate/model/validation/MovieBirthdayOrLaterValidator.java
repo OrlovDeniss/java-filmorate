@@ -16,7 +16,7 @@ public class MovieBirthdayOrLaterValidator implements ConstraintValidator<MovieB
         if (date != null) {
             return date.isAfter(MOVIE_BIRTHDAY) || date.isEqual(MOVIE_BIRTHDAY);
         } else {
-            return false;
+            return true;
         }
     }
 }

@@ -5,11 +5,13 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class UserMapper implements EntityMapper<User> {
@@ -49,7 +51,10 @@ public class UserMapper implements EntityMapper<User> {
             user.setEmail(rs.getString(TABLE_FIELDS.get(0)));
             user.setLogin(rs.getString(TABLE_FIELDS.get(1)));
             user.setName(rs.getString(TABLE_FIELDS.get(2)));
-            user.setBirthday(rs.getDate(TABLE_FIELDS.get(3)).toLocalDate());
+            Date birthday = rs.getDate(TABLE_FIELDS.get(3));
+            if (Objects.nonNull(birthday)) {
+                user.setBirthday(birthday.toLocalDate());
+            }
         } catch (SQLException e) {
             throw new UserNotFoundException("Пользователь не найден.");
         }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
@@ -15,13 +16,18 @@ import java.util.Set;
 public class User extends AbstractEntity {
 
     @Email
+    @JsonProperty("email")
     private String email;
     @Pattern(regexp = "^\\S*$")
     @NotBlank
+    @JsonProperty("login")
     private String login;
+    @JsonProperty("name")
     private String name;
     @PastOrPresent
+    @JsonProperty("birthday")
     private LocalDate birthday;
+    @JsonProperty("friends")
     private Set<Long> friends = new HashSet<>();
 
     public void addFriend(Long id) {
