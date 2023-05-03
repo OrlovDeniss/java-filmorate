@@ -13,7 +13,8 @@ import java.util.Map;
 @Component
 public class FilmLikesMapper implements EntityMapper<FilmLike> {
     private static final String TABLE_NAME = "user_film_like";
-    private static final List<String> TABLE_FIELDS = List.of("film_id", "user_id");
+    private static final List<String> TABLE_FIELDS = List.of(
+            "film_id", "user_id", "like_rate", "is_positive");
 
     @Override
     public String getTableName() {
@@ -30,13 +31,8 @@ public class FilmLikesMapper implements EntityMapper<FilmLike> {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(TABLE_FIELDS.get(0), filmLike.getFilmId());
         params.put(TABLE_FIELDS.get(1), filmLike.getUserId());
-        return params;
-    }
-
-    public Map<String, Object> toMap(long k1, long k2) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put(TABLE_FIELDS.get(0), k1);
-        params.put(TABLE_FIELDS.get(1), k2);
+        params.put(TABLE_FIELDS.get(2), filmLike.getRate());
+        params.put(TABLE_FIELDS.get(3), filmLike.getIsPositive());
         return params;
     }
 

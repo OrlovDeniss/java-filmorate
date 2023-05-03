@@ -27,7 +27,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     private final FeedDbStorage feedStorage;
     private final DirectorDbStorage directorStorage;
     private final String sqlQuery = "with l as" +
-            " (select film_id, count(user_id) as lc" +
+            " (select film_id, avg(like_rate) as lc" +
             " from user_film_like" +
             " group by film_id)" +
             " select id, " +
@@ -117,16 +117,9 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     }
 
     @Override
-    public Film addLike(long filmId, long userId) throws EntityNotFoundException {
-        Film film = findById(filmId).orElseThrow(
-                () -> new EntityNotFoundException("Film with Id: " + filmId + " not found")
-        );
+    public Film addLike(long filmId, long userId, int rate) throws EntityNotFoundException {
 
-        int rate = film.getRate();
-        if (likesStorage.addLike(filmId, userId)) {
-            rate = rate + 1;
-            film.setRate(rate);
-        }
+        likesStorage.addLike(filmId, userId, rate);
         feedStorage.saveUserFeed(Feed.builder()
                 .timestamp(Instant.now().toEpochMilli())
                 .userId(userId)
@@ -135,23 +128,16 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 .entityId(filmId)
                 .build());
         log.debug(
-                "Фильм под Id: {} получил лайк от пользователя" +
-                        " с Id: {}. Всего лайков: {}.",
-                filmId, userId, rate
+                "Фильм под Id: {} получил лайк от пользователя с Id: {}",
+                filmId, userId
         );
-        return film;
+        return findById(filmId).get();
     }
 
     @Override
     public Film deleteLike(long filmId, long userId) throws EntityNotFoundException {
-        Film film = findById(filmId).orElseThrow(
-                () -> new EntityNotFoundException("Film with Id: " + filmId + " not found")
-        );
-        int rate = film.getRate();
-        if (likesStorage.deleteLike(filmId, userId)) {
-            rate = rate - 1;
-            film.setRate(rate);
-        }
+
+        likesStorage.deleteLike(filmId, userId);
         feedStorage.saveUserFeed(Feed.builder()
                 .timestamp(Instant.now().toEpochMilli())
                 .userId(userId)
@@ -160,17 +146,16 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 .entityId(filmId)
                 .build());
         log.debug(
-                "У фильма под Id: {} удален лайк от пользователя" +
-                        " с Id: {}. Всего лайков: {}.",
-                filmId, userId, rate
+                "У фильма под Id: {} удален лайк от пользователя с Id: {}.",
+                filmId, userId
         );
-        return film;
+        return findById(filmId).get();
     }
 
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         var sql = "SELECT FILM.ID, FILM.NAME, FILM.DESCRIPTION, FILM.RELEASE, FILM.DURATION, " +
-                "COUNT(L.USER_ID) as RATE " +
+                "AVG(L.like_rate) as RATE " +
                 "FROM FILM " +
                 "JOIN user_film_like as L on FILM.ID = L.FILM_ID " +
                 "JOIN user_film_like as L1 on L.FILM_ID = L1.FILM_ID " +
@@ -196,20 +181,34 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     @Override
     public List<Film> getFilmRecommendation(Long id) {
         String sql = sqlQuery +
-                " where f.ID in (select FILM_ID " +
-                "from USER_FILM_LIKE " +
-                "where USER_ID in (select USER_ID " +
-                "from USER_FILM_LIKE " +
-                "where FILM_ID in (select FILM_ID " +
-                "from USER_FILM_LIKE " +
-                "where USER_ID = " + id + ") " +
-                "and USER_ID != " + id +
-                " group by USER_ID " +
-                "order by COUNT(FILM_ID) desc " +
-                "limit 1) " +
-                "and FILM_ID not in (select film_id " +
-                "from USER_FILM_LIKE " +
-                "where USER_ID = " + id + ")) " +
+                " where ID in (" + //алгоритм slope one(нет)
+                "select FILM_ID from USER_FILM_LIKE " +
+                "where USER_ID in (" + //id пользователя, который больше всего похож по оценкам фильмов
+                "select other_user from(" + //вспомогательный селект
+                "select user_match.u_id usr, user_match.other_user, avg(user_match.like_match) match_rate " +
+                //выбираем показатели похожести пользователей по лайкам
+                "from FILM some_table left join(" +
+                "select ufl.FILM_ID film_id, ufl.USER_ID u_id, ufl2.USER_ID other_user, " +
+                "case " + //считаем разницу в лайках
+                "when (ufl.like_rate - UFL2.like_rate)<0 " +
+                "then (ufl.like_rate - UFL2.like_rate)*-1 " +
+                "else (ufl.like_rate - UFL2.like_rate) " +
+                "end as like_match " +
+                "from USER_FILM_LIKE ufl " + //присоединяем лайки к лайкам
+                "right join USER_FILM_LIKE ufl2 on UFL2.FILM_ID = ufl.FILM_ID " +
+                "where UFL2.USER_ID != ufl.USER_ID) as user_match " +
+                //присоединяем любую таблицу для подсчета и вывода данных
+                "on user_match.film_id = some_table.id " +
+                //выбираем интересующего нас пользователя
+                "where user_match.u_id = " + id +
+                " group by user_match.u_id, user_match.other_user " +
+                "having match_rate is not null " +
+                //ограничиваем данные о других пользователях до 1 самой похожей по оценкам
+                "order by usr, match_rate limit 1)) " +
+                //получаем список фильмов другого пользователя, которые не оценил исходный
+                "and FILM_ID not in(select film_id from USER_FILM_LIKE where USER_ID = " + id + ") " +
+                //с положительными оценками
+                "and is_positive = true) " +
                 "group by f.ID " +
                 "order by RATE desc";
         return addFilmsProperties(jdbcTemplate.query(sql, mapper));
@@ -219,7 +218,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
     public List<Film> searchByDirectorOrTitle(String word, String[] locationsForSearch) {
         String sql = "(SELECT FR.ID FROM (SELECT f.id, LOWER(f.name) AS name, f.description, " +
                 "f.RELEASE, f.duration, r.rate FROM FILM f LEFT JOIN " +
-                "(SELECT COUNT(user_id) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
+                "(SELECT AVG(like_rate) AS RATE, film_id FROM USER_FILM_LIKE GROUP BY film_id) AS R " +
                 "ON f.ID = r.film_id) AS FR LEFT JOIN (SELECT LOWER(D.NAME) AS NAME_DIRECTOR, " +
                 "FD.FILM_ID FROM DIRECTOR D JOIN FILM_DIRECTOR FD ON D.ID = FD.DIRECTOR_ID) AS FDD " +
                 "ON FR.ID = FDD.FILM_ID WHERE";

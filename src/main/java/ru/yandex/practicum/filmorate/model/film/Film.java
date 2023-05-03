@@ -30,7 +30,7 @@ public class Film extends AbstractEntity {
     @JsonProperty("duration")
     private int duration;
     @JsonProperty("rate")
-    private int rate;
+    private float rate;
     @JsonProperty("genres")
     private Set<Genre> genres = new HashSet<>();
     @JsonProperty("mpa")

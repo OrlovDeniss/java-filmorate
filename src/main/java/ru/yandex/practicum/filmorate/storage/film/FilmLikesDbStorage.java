@@ -20,15 +20,16 @@ public class FilmLikesDbStorage {
         this.mapper = mapper;
     }
 
-    public boolean addLike(long filmId, long userId) {
+    public boolean addLike(long filmId, long userId, int rate) {
         try {
-
             new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName(mapper.getTableName())
                     .execute(
                             mapper.toMap(FilmLike.builder()
                                     .filmId(filmId)
                                     .userId(userId)
+                                    .rate(rate)
+                                    .isPositive(rate > 5)
                                     .build())
                     );
             return true;

@@ -21,8 +21,9 @@ public class FilmController extends AbstractControllerWOParams<Film> {
 
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable @Positive long id,
-                        @PathVariable @Positive long userId) {
-        getService().addLike(id, userId);
+                        @PathVariable @Positive long userId,
+                        @RequestParam(name = "rate") @Positive int rate) {
+        getService().addLike(id, userId, rate);
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface FilmStorage extends Storage<Film> {
 
     List<Film> findTopByLikes(Long limit, Long genreId, Long year);
 
-    Film addLike(long filmId, long userId) throws EntityNotFoundException;
+    Film addLike(long filmId, long userId, int rate) throws EntityNotFoundException;
 
     Film deleteLike(long filmId, long userId) throws EntityNotFoundException;
 

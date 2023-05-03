@@ -50,7 +50,7 @@ public class FilmMapper implements EntityMapper<Film> {
             film.setDescription(rs.getString(TABLE_FIELDS.get(1)));
             film.setReleaseDate(rs.getDate(TABLE_FIELDS.get(2)).toLocalDate());
             film.setDuration(rs.getInt(TABLE_FIELDS.get(3)));
-            film.setRate(rs.getInt("rate"));
+            film.setRate(rs.getFloat("rate"));
         } catch (SQLException e) {
             throw new FilmNotFoundException("Фильм не найден.");
         }

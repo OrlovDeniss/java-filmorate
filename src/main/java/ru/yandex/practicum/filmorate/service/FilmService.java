@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Entity;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -16,17 +17,23 @@ import java.util.List;
 public class FilmService extends AbstractService<Film> {
 
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage) {
         super(filmStorage);
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
-    public void addLike(Long filmId, Long userId) {
-        filmStorage.addLike(filmId, userId);
+    public void addLike(Long filmId, Long userId, int rate) {
+        filmStorage.containsOrElseThrow(filmId);
+        userStorage.containsOrElseThrow(userId);
+        filmStorage.addLike(filmId, userId, rate);
     }
 
     public Film removeLike(Long filmId, Long userId) {
+        filmStorage.containsOrElseThrow(filmId);
+        userStorage.containsOrElseThrow(userId);
         return filmStorage.deleteLike(filmId, userId);
     }
 
@@ -37,6 +44,8 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public List<Film> getCommonFilms(long userId, long friendId) {
+        userStorage.containsOrElseThrow(userId);
+        userStorage.containsOrElseThrow(friendId);
         var films = filmStorage.getCommonFilms(userId, friendId);
         log.info("Получение общих фильмов для user с id {} и друга с id {}", userId, friendId);
         return films;

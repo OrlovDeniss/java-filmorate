@@ -14,4 +14,6 @@ public class FilmLike extends AbstractEntity {
     private Long filmId;
     @NotNull
     private Long userId;
+    private Integer rate;
+    private Boolean isPositive;
 }
