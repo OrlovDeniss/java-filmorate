@@ -12,18 +12,18 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-class LikesExtractor implements ResultSetExtractor<Map<Long, Set<Long>>> {
+class UserFriendsExtractor implements ResultSetExtractor<Map<Long, Set<Long>>> {
 
     @Override
     public Map<Long, Set<Long>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<Long, Set<Long>> usersLikes = new LinkedHashMap<>();
+        Map<Long, Set<Long>> usersFriends = new LinkedHashMap<>();
         while (rs.next()) {
             Long userId = rs.getLong("user_id");
-            usersLikes.putIfAbsent(userId, new HashSet<>());
+            usersFriends.putIfAbsent(userId, new HashSet<>());
             Long filmId = rs.getLong("user_friend_id");
-            usersLikes.get(userId).add(filmId);
+            usersFriends.get(userId).add(filmId);
         }
-        return usersLikes;
+        return usersFriends;
     }
 
 }

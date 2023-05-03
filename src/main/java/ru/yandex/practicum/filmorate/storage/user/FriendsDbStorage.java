@@ -17,7 +17,7 @@ import java.util.Set;
 public class FriendsDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final LikesExtractor likesExtractor;
+    private final UserFriendsExtractor userFriendsExtractor;
 
     protected void saveFriends(Long userId, Set<Long> friends) {
         deleteAllFriends(userId);
@@ -47,7 +47,7 @@ public class FriendsDbStorage {
     }
 
     protected Map<Long, Set<Long>> findUserFriends() {
-        return jdbcTemplate.query("SELECT USER_ID, USER_FRIEND_ID FROM USER_FRIEND", likesExtractor);
+        return jdbcTemplate.query("SELECT USER_ID, USER_FRIEND_ID FROM USER_FRIEND", userFriendsExtractor);
     }
 
     protected void deleteAllFriends(Long id) {

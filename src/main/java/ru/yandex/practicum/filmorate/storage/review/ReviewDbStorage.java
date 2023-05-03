@@ -42,7 +42,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
 
     @Override
     public Review save(Review review) {
-        Review r = super.save(review);
+        super.save(review);
         feedStorage.saveUserFeed(Feed.builder()
                 .timestamp(Instant.now().toEpochMilli())
                 .userId(review.getUserId())
@@ -50,7 +50,7 @@ public class ReviewDbStorage extends AbstractDbStorage<Review> implements Review
                 .operation(OperationType.ADD)
                 .entityId(review.getId())
                 .build());
-        return r;
+        return review;
     }
 
     @Override
