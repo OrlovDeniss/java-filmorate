@@ -5,13 +5,11 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.EntityMapper;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class FilmMapper implements EntityMapper<Film> {
@@ -48,18 +46,9 @@ public class FilmMapper implements EntityMapper<Film> {
         Film film = new Film();
         try {
             film.setId(rs.getLong("id"));
-            String name = rs.getString(TABLE_FIELDS.get(0));
-            if (Objects.nonNull(name)) {
-                film.setName(rs.getString(TABLE_FIELDS.get(0)));
-            }
-            String description = rs.getString(TABLE_FIELDS.get(1));
-            if (Objects.nonNull(description)) {
-                film.setDescription(description);
-            }
-            Date releaseDate = rs.getDate(TABLE_FIELDS.get(2));
-            if (Objects.nonNull(releaseDate)) {
-                film.setReleaseDate(releaseDate.toLocalDate());
-            }
+            film.setName(rs.getString(TABLE_FIELDS.get(0)));
+            film.setDescription(rs.getString(TABLE_FIELDS.get(1)));
+            film.setReleaseDate(rs.getDate(TABLE_FIELDS.get(2)).toLocalDate());
             film.setDuration(rs.getInt(TABLE_FIELDS.get(3)));
             film.setRate(rs.getInt("rate"));
         } catch (SQLException e) {

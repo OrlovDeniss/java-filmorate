@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.AbstractEntity;
 import ru.yandex.practicum.filmorate.model.validation.MovieBirthdayOrLater;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class Film extends AbstractEntity {
     @Size(max = 200)
     @JsonProperty("description")
     private String description;
+    @NotNull
     @MovieBirthdayOrLater
     @JsonProperty("releaseDate")
     private LocalDate releaseDate;
