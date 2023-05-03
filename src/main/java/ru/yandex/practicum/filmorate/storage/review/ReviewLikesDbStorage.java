@@ -13,26 +13,26 @@ public class ReviewLikesDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addLikes(Long id, Long userId, boolean b) {
+    public void addLikes(Long id, Long userId, boolean isLike) {
         if (jdbcTemplate.update("update user_review_like " +
                         "set is_like = ? where review_id = ? and user_id = ?",
-                b, id, userId) <= 0) {
+                isLike, id, userId) <= 0) {
             jdbcTemplate.update("INSERT INTO user_review_like" +
                     "(review_id, user_id, is_like) " +
-                    "VALUES(?, ?, ?)", id, userId, b);
+                    "VALUES(?, ?, ?)", id, userId, isLike);
         }
         log.debug(
                 "Review with Id: {} get {} from user with Id: {}.",
-                id, b ? "like" : "dislike", userId
+                id, isLike ? "like" : "dislike", userId
         );
     }
 
-    public void deleteLikes(Long id, Long userId, boolean b) {
+    public void deleteLikes(Long id, Long userId, boolean isLike) {
         jdbcTemplate.update("delete from user_review_like where review_id=? " +
                 "and user_id=?", id, userId);
         log.debug(
                 "Review with Id: {}, {} from user with Id: {}, deleted!",
-                id, b ? "like" : "dislike", userId
+                id, isLike ? "like" : "dislike", userId
         );
     }
 }

@@ -23,7 +23,6 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public void addLike(Long filmId, Long userId) {
-
         filmStorage.addLike(filmId, userId);
     }
 
