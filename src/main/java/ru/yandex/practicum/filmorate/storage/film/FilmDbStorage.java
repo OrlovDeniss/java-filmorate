@@ -187,7 +187,7 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 "select other_user from(" + //вспомогательный селект
                 "select user_match.u_id usr, user_match.other_user, avg(user_match.like_match) match_rate " +
                 //выбираем показатели похожести пользователей по лайкам
-                "from FILM some_table left join(" +
+                "from(" +
                 "select ufl.FILM_ID film_id, ufl.USER_ID u_id, ufl2.USER_ID other_user, " +
                 "case " + //считаем разницу в лайках
                 "when (ufl.like_rate - UFL2.like_rate)<0 " +
@@ -195,10 +195,9 @@ public class FilmDbStorage extends AbstractDbStorage<Film> implements FilmStorag
                 "else (ufl.like_rate - UFL2.like_rate) " +
                 "end as like_match " +
                 "from USER_FILM_LIKE ufl " + //присоединяем лайки к лайкам
-                "right join USER_FILM_LIKE ufl2 on UFL2.FILM_ID = ufl.FILM_ID " +
-                "where UFL2.USER_ID != ufl.USER_ID) as user_match " +
-                //присоединяем любую таблицу для подсчета и вывода данных
-                "on user_match.film_id = some_table.id " +
+                "left join USER_FILM_LIKE ufl2 on UFL2.FILM_ID = ufl.FILM_ID " +
+                "where UFL2.USER_ID != ufl.USER_ID" +
+                ") as user_match " +
                 //выбираем интересующего нас пользователя
                 "where user_match.u_id = " + id +
                 " group by user_match.u_id, user_match.other_user " +

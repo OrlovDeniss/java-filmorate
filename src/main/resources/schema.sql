@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS user_film_like
 (
     film_id bigint REFERENCES film (id) ON DELETE CASCADE,
     user_id bigint REFERENCES usr (id) ON DELETE CASCADE,
-    rate integer DEFAULT 0,
+    like_rate integer DEFAULT 0,
     is_positive boolean DEFAULT false,
     PRIMARY KEY(film_id, user_id)
 );
