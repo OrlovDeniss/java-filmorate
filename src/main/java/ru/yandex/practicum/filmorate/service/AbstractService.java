@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractService<T extends Entity> implements Service<T> {
 
-    private final Storage<T> storage;
+    protected final Storage<T> storage;
 
     protected AbstractService(Storage<T> storage) {
         this.storage = storage;
@@ -44,5 +44,11 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
         storage.update(t);
         log.info("Обновлен: {}.", t);
         return findById(t.getId());
+    }
+
+    public void delete(Long id) {
+        T t = findById(id);
+        storage.delete(id);
+        log.info("Удален: {}.", t);
     }
 }

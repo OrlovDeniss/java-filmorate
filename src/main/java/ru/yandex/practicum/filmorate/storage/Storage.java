@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface Storage<T> {
 
+    void containsOrElseThrow(long id);
+
     T save(T t);
 
     T update(T t);
@@ -13,4 +15,5 @@ public interface Storage<T> {
 
     List<T> findAll();
 
+    Optional<T> delete(Long id);
 }

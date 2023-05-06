@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
-import ru.yandex.practicum.filmorate.storage.film.db.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -41,9 +41,9 @@ class FilmDbStorageTest {
         f2.setName("newName");
         f2.setDescription("newDesc");
         f2.setDuration(300);
+        f2.setRate(2);
         f2.setReleaseDate(LocalDate.of(2020, 12, 1));
         f2.setGenres(Set.of(new Genre(3L, "Мультфильм")));
-        f2.setLikes(Set.of(1L, 2L));
 
         assertThat(filmDbStorage.update(f2)).isEqualTo(f2);
     }
@@ -55,6 +55,6 @@ class FilmDbStorageTest {
 
     @Test
     void findTopByLikes() {
-        assertThat(filmDbStorage.findTopByLikes(1L).get(0).getId()).isEqualTo(1);
+        assertThat(filmDbStorage.findTopByLikes(10L, null, null).get(0).getId()).isEqualTo(1);
     }
 }
