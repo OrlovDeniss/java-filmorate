@@ -1,65 +1,19 @@
-# java-filmorate
-Template repository for Filmorate project.
+# Filmorate
+Filmorate - база фильмов, приложение позволяет пользователям добавлять фильмы и отзывы,
+находить лучшие фильмы и получить рекомендации на основе интересов пользователей.
 
-### Тема 4/8: Промежуточное задание месяца SQL
-https://dbdiagram.io/d/64196a81296d97641d8985fa
+## Стек
+- Java 11
+- Maven 4
+- Spring Boot 2.7.2
+- JDBC
+- H2 Database
 
+## Сборка
+Для сборки перейдите в директорию проекта и выполните команду:
+```Bash
+mvn clean package
+```
 
-<details>
-<summary>dbdiagram.io code</summary>
-  
-  
-    Table film {
-      id bigint [pk]
-      name varchar
-      description varchar(200)
-      release datetime
-      duration int
-    }
-
-    Table user_film_like {
-      user_id bigint [ref: - usr.id]
-      film_id bigint [ref: - film.id]
-    }
-
-    Table usr {
-      id bigint [pk]
-      email varchar
-      login varchar
-      name varchar
-      birthday datetime
-    }
-
-    Table user_frend {
-      user_id bigint [ref: - usr.id]
-      user_firend_id bigint [ref: > usr.id]
-      status_id int
-    }
-
-    Table status {
-      id int [ref: - user_frend.status_id]
-      name varchar
-    }
-
-    Table film_genre {
-      film_id bigint [ref: - film.id]
-      genre_id int [ref: > genre.id]
-    }
-
-    Table genre {
-      id int [pk]
-      name varchar
-    }
-
-    Table film_mpa {
-      film_id bigint [ref: - film.id]
-      mpa_id int [ref: - mpa_rating.id]
-    }
-
-    Table mpa_rating {
-      id int
-      name varchar
-    }
-</details>
-
-![Image alt](/filmorate_ER.png)
+## Статус
+Завершен.
