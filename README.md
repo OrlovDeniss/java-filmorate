@@ -68,7 +68,7 @@ git clone https://github.com/OrlovDeniss/java-filmorate.git
 ```
 2. Перейдите в каталог проекта: 
 ```Bash
-cd filmorate
+cd java-filmorate
 ```
 3. Скомпилируйте исходные файлы:
 ```Bash
